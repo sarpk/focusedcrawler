@@ -25,7 +25,7 @@ public class Download {
 	/**
 	 * @return the content of page, null if download is not finished or corrupted
 	 */
-	public Document pageContent() {
+	public Document getPageContent() {
 		if (didDownloadFinish()) {
 			return pageDoc;
 		}
@@ -35,8 +35,8 @@ public class Download {
 	}
 	
 	/**
-	 * Checks the download status, returns true if download is finished
-	 * @return
+	 * Checks the download status
+	 * @return true if download is finished
 	 */
 	public boolean didDownloadFinish() {
 		return downloadSt;
