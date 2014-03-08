@@ -41,11 +41,14 @@ public class Parse {
 	}
 	
 	private void setLinks() {
-		LinkedHashMap<String, String> linkMap = new LinkedHashMap<String, String>();
+		linkMap = new LinkedHashMap<String, String>();
 		Elements links = document.select("a[href]");
 		for (Element link : links) {
 			// Store values from href attribute
-			linkMap.put(link.attr("href"), link.text());
+			String attr = link.attr("href");
+			String content = link.text();
+
+			linkMap.put(attr, content);
 		}
 	}
 }
