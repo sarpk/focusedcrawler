@@ -1,7 +1,5 @@
 package query;
 
-import java.util.LinkedHashMap;
-
 import downloader.MainDownloader;
 import edu.mit.jwi.IDictionary;
 /**
@@ -12,7 +10,7 @@ public class ExampleDocumentHandler {
 	private final String WIKI_RANDOM_PAGE = "http://en.wikipedia.org/wiki/Special:Random";
 	private String address;
 	private IDictionary dictionary;
-	private LinkedHashMap<String, LinkedHashMap<String, Integer>> termHash;
+	//private LinkedHashMap<String, LinkedHashMap<String, Integer>> termHash;
 
 	/**
 	 * Constructor uses Wikipedia Random page to handle words
@@ -34,9 +32,9 @@ public class ExampleDocumentHandler {
 	/**
 	 * @return Term to LinkedHashMap of term and score 
 	 */
-	public LinkedHashMap<String, LinkedHashMap<String, Integer>> getTermHash() {
+	/*public LinkedHashMap<String, LinkedHashMap<String, Integer>> getTermHash() {
 		return termHash;
-	}
+	}*/
 
 	/**
 	 * General initialiser
@@ -45,7 +43,7 @@ public class ExampleDocumentHandler {
 	private void init(String address) {
 		this.address = address;
 		dictionary = new WordNetPrepare().getDictionary();
-		termHash = new LinkedHashMap<String, LinkedHashMap<String, Integer>>();
+		//termHash = new LinkedHashMap<String, LinkedHashMap<String, Integer>>();
 	}
 
 	/**
@@ -58,8 +56,7 @@ public class ExampleDocumentHandler {
 		}
 		MainDownloader mDownloader = new MainDownloader(address);
 		if (mDownloader.didDownloadFinish()) {
-			String pageBody = mDownloader.getPageBody();
-			handleBody(pageBody);
+			handleBody(mDownloader.getBodyArray());
 		}
 		startHandling(--amount);
 	}
@@ -67,12 +64,11 @@ public class ExampleDocumentHandler {
 	/**
 	 * @param body of a webpage
 	 */
-	private void handleBody(String body) {
-		String[] wordArr = body.split("[^a-zA-Z]+");
+	private void handleBody(String[] wordArr) {
 		for (String eachWord : wordArr) {
-			WordNetHashConstructor hashConst = new WordNetHashConstructor(
-					dictionary, eachWord);
-			termHash.put(eachWord, hashConst.getHashMap());
+			/*WordNetHashConstructor hashConst =*/
+			new WordNetHashConstructor(dictionary, eachWord);
+			//termHash.put(eachWord, hashConst.getHashMap());
 		}
 	}
 

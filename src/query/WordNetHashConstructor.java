@@ -1,6 +1,5 @@
 package query;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import edu.mit.jwi.IDictionary;
@@ -14,7 +13,8 @@ import edu.mit.jwi.item.POS;
  * @author Sarp
  */
 public class WordNetHashConstructor {
-	LinkedHashMap<String, Integer> stringHash;
+	//LinkedHashMap<String, Integer> stringHash;
+	QueryStore qStore;
 	
 	/**
 	 * Constructor
@@ -22,7 +22,8 @@ public class WordNetHashConstructor {
 	 * @param keyword to be constructed
 	 */
 	public WordNetHashConstructor(IDictionary dictionary, String keyword) {
-		stringHash = new LinkedHashMap<String, Integer>();
+		//stringHash = new LinkedHashMap<String, Integer>();
+		qStore = QueryStore.getInstance();
 		setSynonyms(dictionary, keyword, POS.ADJECTIVE);
 		setSynonyms(dictionary, keyword, POS.ADVERB);
 		setSynonyms(dictionary, keyword, POS.NOUN);
@@ -33,9 +34,9 @@ public class WordNetHashConstructor {
 	/**
 	 * @return term and score hashmap
 	 */
-	public LinkedHashMap<String, Integer> getHashMap() {
+	/*public LinkedHashMap<String, Integer> getHashMap() {
 		return stringHash;
-	}
+	}*/
 
 	private void setSynonyms(IDictionary dict, String expandingWord, POS posType) {
 
@@ -63,7 +64,8 @@ public class WordNetHashConstructor {
 				if (!firstword.getLemma().equals(w.getLemma())) {
 					if (w.getLemma().matches("^[a-zA-Z]+$")) {// make sure it's
 																// all one word
-						stringHash.put(w.getLemma(), ++score);
+						//stringHash.put(w.getLemma(), ++score);
+						qStore.setTermVsTermAndScore(expandingWord, w.getLemma(), ++score);
 					}
 				}
 			}
