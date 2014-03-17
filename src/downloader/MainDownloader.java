@@ -32,6 +32,12 @@ public class MainDownloader {
 	public String getPageBody() {
 		return parser.getPageBody();
 	}
+	/**
+	 * @return Body of page as a String array
+	 */
+	public String[] getBodyArray() {
+		return parser.getPageBody().split("[^a-zA-Z]+");
+	}
 	
 	/**
 	 * @return Clickable(href) link map, key is URL, value is the content
