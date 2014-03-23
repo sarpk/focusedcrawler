@@ -1,10 +1,12 @@
 package crawler;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import query.QueryStore;
-
 import downloader.MainDownloader;
 
 /**
@@ -19,10 +21,12 @@ public class MainCrawler {
 	private Integer amountOfCrawledPage;
 	
 	private final Integer maxCrawlPage = 10;
+	private ScorePriorityMap crawledLinks;
 	
 	public MainCrawler() {
 		weightThreshold = 0;
 		amountOfCrawledPage = 0;
+		crawledLinks = new ScorePriorityMap();
 	}
 	/**
 	 * Crawls the given page
@@ -34,11 +38,26 @@ public class MainCrawler {
 		QueryStore qStore = QueryStore.getInstance();
 		MainDownloader mDownloader = new MainDownloader(address);
 		if (mDownloader.didDownloadFinish()) {
+			System.out.println("Page is downloaded");
 			Integer currentWeight = 0;
-			for (String word : mDownloader.getBodyArray()) {
-				currentWeight += qStore.getTermvsTermScore(query, word.toLowerCase());
-				savePage(address, currentWeight);
+			LinkedHashMap<String,Double> localLinks = new LinkedHashMap<String,Double>();
+			for (String word : mDownloader.getBodySet()) {
+				Integer wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
+				if (wordScore != 0) {
+					Entry<Integer, ArrayList<String>> closeLinkEnt = 
+							mDownloader.setClosestLinksToTerm(word);
+					Double linkScore = (wordScore.doubleValue()/
+							qStore.getAmountEntries(query).doubleValue()*0.9);
+					System.out.println(word + ": " +linkScore);
+					for (String lAddr : closeLinkEnt.getValue()) {
+						localLinks.put(lAddr, linkScore);
+					}
+					wordScore *= closeLinkEnt.getKey();
+				}
+				currentWeight += wordScore;
 			}
+			savePageLinks(address, localLinks, currentWeight);
+			savePage(address, currentWeight);
 			System.out.println(currentWeight);
 			if (shouldStopCrawling()) {
 				return;
@@ -50,21 +69,45 @@ public class MainCrawler {
 					String[] linkContents = pair.getValue().split("[^a-zA-Z]+");
 					Integer linkWeight = 0;
 					for (String linkContent : linkContents) {
-						linkWeight += qStore.getTermvsTermScore(query, linkContent.toLowerCase());
+						linkWeight += qStore.getTermvsTermScore(query, 
+								linkContent.toLowerCase());
 					}
 					if (linkWeight > 0) {
-						saveLink(pair.getKey(), linkWeight);
+						saveLink(address, pair.getKey(), linkWeight.doubleValue()*currentWeight);
 					}
 					/*System.out.println(pair.getKey() + " val is: "
 							+ pair.getValue());*/
 				}
 			}
+			String highestAddr = getHighestScoredLink();
+			if (highestAddr != null) {
+				crawl(highestAddr, query);
+			}
+			else {
+				System.out.println("No link to crawl");
+			}
 			
+			
+		}
+		else {
+			System.out.println("Download is not finished");
 		}
 	}
 	
+	private String getHighestScoredLink() {
+		String highestAddr = crawledLinks.getHighestScoreAddress();
+		System.out.println("Highest addr is: " + highestAddr);
+		return highestAddr;
+	}
+	
+	private void savePageLinks(String prefix, LinkedHashMap<String, Double> localLinks,
+			Integer currentWeight) {
+		for (Entry<String,Double> linkEn: localLinks.entrySet()) {
+			Double linkWeight = linkEn.getValue()*currentWeight;
+			saveLink(prefix,linkEn.getKey(), linkWeight);
+		}
+	}
 	/**
-	 * 
 	 * @return true if crawler should stop crawling more
 	 */
 	private boolean shouldStopCrawling() {
@@ -83,13 +126,26 @@ public class MainCrawler {
 	private void savePage(String address, Integer currentWeight) {
 		if (currentWeight >= getWeightThreshold()) {
 			//TO-DO Save page with weight in a priority queue
+			System.out.println("Saving page: " + address);
 			pageWeight(currentWeight);
 		}
 	}
 	
-	private void saveLink(String address, Integer linkWeight) {
-		//TO-DO Save page with weight in a priority queue
+	private void saveLink(String prefix, String address, Double linkWeight) {
+		if (!address.startsWith("http")) {
+			URL url = null;
+			try {
+				url = new URL(prefix);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (url != null) {
+				address = String.format("%s://%s%s", url.getProtocol() ,url.getHost(),address);
+			}
+		}
 		System.out.println(address + " with the weight of " + linkWeight);
+		crawledLinks.addAddress(address, linkWeight);
 	}
 	
 	/**
