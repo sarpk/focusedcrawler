@@ -20,13 +20,15 @@ public class MainCrawler {
 	private Integer weightThreshold;
 	private Integer amountOfCrawledPage;
 	
-	private final Integer maxCrawlPage = 10;
+	private final Integer maxCrawlPage = 50;
 	private ScorePriorityMap crawledLinks;
+	private ScorePriorityMap highestScoredPages;
 	
 	public MainCrawler() {
 		weightThreshold = 0;
 		amountOfCrawledPage = 0;
 		crawledLinks = new ScorePriorityMap();
+		highestScoredPages = new ScorePriorityMap();
 	}
 	/**
 	 * Crawls the given page
@@ -79,24 +81,52 @@ public class MainCrawler {
 							+ pair.getValue());*/
 				}
 			}
-			String highestAddr = getHighestScoredLink();
-			if (highestAddr != null) {
-				crawl(highestAddr, query);
-			}
-			else {
-				System.out.println("No link to crawl");
-			}
-			
+
+			crawlHighest(query);
 			
 		}
 		else {
 			System.out.println("Download is not finished");
+			crawlHighest(query);
+		}
+	}
+	
+	public void printTop10Pages(){
+		for (int i = 1; i < 11; i++) {
+			String highestAddr = getHighestScoredPages();
+			if (highestAddr != null) {
+				System.out.println(i + ": "+ highestAddr);
+			}
+			else {
+				System.out.println("No link to crawl");
+				break;
+			}
+		}
+	}
+	
+	private void crawlHighest(String query) {
+		String highestAddr = getHighestScoredLink();
+		if (highestAddr != null) {
+			crawl(highestAddr, query);
+		}
+		else {
+			System.out.println("No link to crawl");
 		}
 	}
 	
 	private String getHighestScoredLink() {
 		String highestAddr = crawledLinks.getHighestScoreAddress();
-		System.out.println("Highest addr is: " + highestAddr);
+		if(highestAddr!= null) {
+			System.out.println("Highest addr is: " + highestAddr);
+		}
+		return highestAddr;
+	}
+	
+	private String getHighestScoredPages() {
+		String highestAddr = highestScoredPages.getHighestScoreAddress();
+		if(highestAddr!= null) {
+			System.out.println("Highest page is: " + highestAddr);
+		}
 		return highestAddr;
 	}
 	
@@ -127,6 +157,7 @@ public class MainCrawler {
 		if (currentWeight >= getWeightThreshold()) {
 			//TO-DO Save page with weight in a priority queue
 			System.out.println("Saving page: " + address);
+			highestScoredPages.addAddress(address, currentWeight.doubleValue());
 			pageWeight(currentWeight);
 		}
 	}

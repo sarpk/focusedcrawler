@@ -31,6 +31,7 @@ public class MainMeth {
 		MainCrawler mCrawl = new MainCrawler();
 		mCrawl.crawl(addr, query);
 		scan.close();
+		mCrawl.printTop10Pages();
 
 	}
 }

@@ -25,7 +25,12 @@ public class ScorePriorityMap {
 	}
 	
 	public String getHighestScoreAddress() {
-		String highest = linksOrdered.lastKey();
+		String highest = null;
+		try {
+			highest = linksOrdered.lastKey();
+		}
+		catch(Exception ex) {
+		}
 		visitAddress(highest);
 		return highest;
 	}
