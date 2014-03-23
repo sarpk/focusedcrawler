@@ -56,7 +56,7 @@ public class QueryStore {
 	/**
 	 * @param term1 - initial term
 	 * @param term2 - term to be checked in term1
-	 * @return True if term2 exists in term1, otherwise false
+	 * @return True if term2 exists in term1 or term1 == term2, otherwise false
 	 */
 	public boolean termvsTermExists(String term1, String term2) {
 		LinkedHashMap<String, Integer> entry = termHash.get(term1);
@@ -64,6 +64,9 @@ public class QueryStore {
 			if (entry.get(term2) != null) {
 				return true;
 			}
+		}
+		else if (term1.equals(term2)) {
+			return true;
 		}
 		return false;
 	}
@@ -75,12 +78,29 @@ public class QueryStore {
 	 * @return score of term2 in term1, if doesn't exist 0
 	 */
 	public Integer getTermvsTermScore(String term1, String term2) {
+		Integer score = 0;
 		LinkedHashMap<String, Integer> entry = termHash.get(term1);
 		if (entry != null) {
-			Integer score = entry.get(term2);
-			if (score != null) {
-				return score;
+			score = entry.get(term2);
+			if (score == null) {
+				score = 0;
 			}
+		}
+		if (term1.equals(term2)) {
+			score = getAmountEntries(term1);
+		}
+		return score;
+	}
+	
+	/**
+	 * 
+	 * @param term
+	 * @return The total amount of entries for the given term
+	 */
+	public Integer getAmountEntries(String term) {
+		LinkedHashMap<String, Integer> entry = termHash.get(term);
+		if (entry != null) {
+			return (entry.size()+2);
 		}
 		return 0;
 	}
