@@ -116,7 +116,10 @@ public class Parse {
 	}
 	
 	private void splitBodyToArrayAndSet() {
-		body =  getPageBody().split("[^a-zA-Z]+");
+		try {
+			body =  getPageBody().split("[^a-zA-Z]+");
+		}
+		catch (Exception e) {return;}
 		bodyWordsSet = new LinkedHashSet<String>();
 		for (String bodyW : body) {
 			bodyWordsSet.add(bodyW);

@@ -29,7 +29,7 @@ public class MainMeth {
 		String addr = scan.nextLine();
 		System.out.println("Crawling: " + addr);
 		MainCrawler mCrawl = new MainCrawler();
-		mCrawl.crawl(addr, query);
+		mCrawl.crawlerRunner(addr, query);
 		scan.close();
 		mCrawl.printTop10Pages();
 

@@ -22,7 +22,7 @@ public class MainDownloader {
 	 */
 	public MainDownloader(String address) {
 		download = new Download(address);
-		if(didDownloadFinish()) {
+		if(didDownloadFinish() && download.getPageContent() != null ) {
 			parser = new Parse (download.getPageContent());
 		}
 	}
@@ -54,7 +54,7 @@ public class MainDownloader {
 	 * @return Body of page as a String set for no duplicates
 	 */
 	public LinkedHashSet<String> getBodySet() {
-		return parser.getPageBodySet();
+		return parser.getPageBodySet() != null ? parser.getPageBodySet() : new LinkedHashSet<String>();
 	}
 	
 	/**

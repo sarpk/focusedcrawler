@@ -20,7 +20,7 @@ public class MainCrawler {
 	private Integer weightThreshold;
 	private Integer amountOfCrawledPage;
 	
-	private final Integer maxCrawlPage = 50;
+	private final Integer maxCrawlPage = 12*500;
 	private ScorePriorityMap crawledLinks;
 	private ScorePriorityMap highestScoredPages;
 	
@@ -30,13 +30,42 @@ public class MainCrawler {
 		crawledLinks = new ScorePriorityMap();
 		highestScoredPages = new ScorePriorityMap();
 	}
+	
+	
+	/**
+	 * Runner method for crawler
+	 * @param address
+	 * @param query
+	 */
+	public void crawlerRunner(String address, String query) {
+		crawl(address, query);//Initial run
+		while (crawlHighest(query));//While can crawl
+	}
+	
+	/**
+	 * Prints top 10 results
+	 * Don't print more than once!
+	 */
+	public void printTop10Pages(){
+		for (int i = 1; i < 11; i++) {
+			String highestAddr = getHighestScoredPages();
+			if (highestAddr != null) {
+				System.out.println(i + ": "+ highestAddr);
+			}
+			else {
+				System.out.println("No link to print");
+				break;
+			}
+		}
+	}
+	
 	/**
 	 * Crawls the given page
 	 * @param address of the website
 	 * @param query 
 	 * @param termHash 
 	 */
-	public void crawl(String address, String query) {
+	private void crawl(String address, String query) {
 		QueryStore qStore = QueryStore.getInstance();
 		MainDownloader mDownloader = new MainDownloader(address);
 		if (mDownloader.didDownloadFinish()) {
@@ -81,36 +110,24 @@ public class MainCrawler {
 							+ pair.getValue());*/
 				}
 			}
-
-			crawlHighest(query);
 			
 		}
 		else {
 			System.out.println("Download is not finished");
-			crawlHighest(query);
 		}
 	}
 	
-	public void printTop10Pages(){
-		for (int i = 1; i < 11; i++) {
-			String highestAddr = getHighestScoredPages();
-			if (highestAddr != null) {
-				System.out.println(i + ": "+ highestAddr);
-			}
-			else {
-				System.out.println("No link to crawl");
-				break;
-			}
-		}
-	}
+
 	
-	private void crawlHighest(String query) {
+	private boolean crawlHighest(String query) {
 		String highestAddr = getHighestScoredLink();
 		if (highestAddr != null) {
 			crawl(highestAddr, query);
+			return true;
 		}
 		else {
 			System.out.println("No link to crawl");
+			return false;
 		}
 	}
 	
@@ -144,6 +161,9 @@ public class MainCrawler {
 		amountOfCrawledPage++;
 		if (amountOfCrawledPage >= maxCrawlPage) {
 			return true;
+		}
+		if (amountOfCrawledPage % 500 == 0) {
+			System.out.println("Current crawled amount is: " + amountOfCrawledPage);
 		}
 		return false;
 	}

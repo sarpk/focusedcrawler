@@ -1,7 +1,6 @@
 package downloader;
 
-import java.io.IOException;
-
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -43,9 +42,16 @@ public class Download {
 	}
 	
 	private boolean download(String address) {
+		Connection jAddr = null; 
+		try {			
+			jAddr = Jsoup.connect(address);
+		}
+		catch (Exception e) {
+			return false;
+		}
 		try {
-			pageDoc = Jsoup.connect(address).get();
-		} catch (IOException e) {
+			pageDoc = jAddr.get();
+		} catch (Exception e) {
 			return false;
 		}
 		return true;
