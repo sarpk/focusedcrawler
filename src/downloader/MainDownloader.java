@@ -67,6 +67,10 @@ public class MainDownloader {
 	public Map.Entry<Integer,ArrayList<String>> setClosestLinksToTerm(String term) {
 		return parser.getElementsTermOccuranceWithLinks(term);
 	}
+	
+	public Parse getParser() {
+		return parser;
+	}
 
 	
 }

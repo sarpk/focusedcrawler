@@ -2,11 +2,13 @@ package downloader;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -20,9 +22,12 @@ import org.jsoup.select.Elements;
  */
 public class Parse {
 	private Document document;
+	private Document xmpDocument;
 	private LinkedHashMap<String, String> linkMap;
 	private String[] body;
 	private LinkedHashSet<String> bodyWordsSet;
+	private List<String> splitText;
+	private String splitter = "ASD1244FJ236KTJ2jlk235jkldsajSDG234sdG324DFG235SDG214aSdSDg123";
 	
 	/**
 	 * Constructor gets the document to set values
@@ -32,6 +37,7 @@ public class Parse {
 		document = doc;
 		setLinks();
 		splitBodyToArrayAndSet();
+		setXMPForHref();
 	}
 	
 	/**
@@ -75,6 +81,24 @@ public class Parse {
 		}
 		return new AbstractMap.SimpleEntry<Integer, ArrayList<String>>
 			(num, setClosestLinksInElements(elementsInTerm, term));
+	}
+	
+	public List<String> getSplitText() {
+		return splitText;
+	}
+	
+	private void setXMPForHref() {
+		if (document == null) {
+			return;
+		}
+		String splitWrapper = String.format("<xmp>%s</xmp>%s", splitter,splitter);
+		for (Element element : document.body().select("a[href]")) {
+			element.wrap(splitWrapper); 
+		}
+		 
+		xmpDocument = Jsoup.parse(document.html());
+		//System.out.println(xmpDocument.body().text());
+		splitText = Arrays.asList(xmpDocument.body().text().split(splitter));
 	}
 	
 	private ArrayList<String> setClosestLinksInElements(Elements elementsInTerm, String term) {

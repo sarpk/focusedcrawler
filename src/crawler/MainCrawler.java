@@ -2,9 +2,10 @@ package crawler;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+
+import org.jsoup.Jsoup;
 
 import query.QueryStore;
 import downloader.MainDownloader;
@@ -20,7 +21,7 @@ public class MainCrawler {
 	private Integer weightThreshold;
 	private Integer amountOfCrawledPage;
 	
-	private final Integer maxCrawlPage = 12*500;
+	private final Integer maxCrawlPage = 50;
 	private ScorePriorityMap crawledLinks;
 	private ScorePriorityMap highestScoredPages;
 	
@@ -72,7 +73,46 @@ public class MainCrawler {
 			System.out.println("Page is downloaded");
 			Integer currentWeight = 0;
 			LinkedHashMap<String,Double> localLinks = new LinkedHashMap<String,Double>();
-			for (String word : mDownloader.getBodySet()) {
+			int splitTextSize = mDownloader.getParser().getSplitText().size();
+			for (int i = 0; i < splitTextSize; i++) {
+				String splitText = mDownloader.getParser().getSplitText().get(i);
+				if (!splitText.contains("</a>")) {//Not href
+			    	String content = splitText.trim();
+			    	String[] textContents = content.split("[^a-zA-Z]+");
+			    	for (int j = 0; j < textContents.length; j++ ) {
+			    		String word = textContents[j];
+			    		Integer wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
+						if (wordScore != 0) {
+							int getInd = -1;
+							if((j >= textContents.length/2) && ((i+1) < splitTextSize ) &&
+									mDownloader.getParser().getSplitText().get(i+1)
+									.contains("</a>")) {
+								getInd = i+1;
+							}
+							else if (((i-1) >= 0) &&
+							mDownloader.getParser().getSplitText().get(i-1)
+							.contains("</a>")) {
+								getInd = i-1;
+							}
+							
+							if (getInd != -1) {
+								String hrefLink = 
+										mDownloader.getParser().getSplitText().get(getInd);
+								String hrefLinkAttr = 
+										Jsoup.parse(hrefLink, "").select("a[href]").attr("href");
+								//System.out.println(hrefLinkAttr);
+								Double linkScore = (wordScore.doubleValue()/
+										qStore.getAmountEntries(query).doubleValue()*0.9);
+								System.out.println(word + ": " +linkScore);
+								localLinks.put(hrefLinkAttr, linkScore);
+							}
+						}
+						currentWeight += wordScore;
+			    	}
+				}
+			}
+			
+			/*for (String word : mDownloader.getBodySet()) {
 				Integer wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
 				if (wordScore != 0) {
 					Entry<Integer, ArrayList<String>> closeLinkEnt = 
@@ -80,19 +120,16 @@ public class MainCrawler {
 					Double linkScore = (wordScore.doubleValue()/
 							qStore.getAmountEntries(query).doubleValue()*0.9);
 					System.out.println(word + ": " +linkScore);
-					for (String lAddr : closeLinkEnt.getValue()) {
-						localLinks.put(lAddr, linkScore);
+					/*for (String lAddr : closeLinkEnt.getValue()) {
+						//localLinks.put(lAddr, linkScore);
 					}
 					wordScore *= closeLinkEnt.getKey();
 				}
 				currentWeight += wordScore;
-			}
+			}*/
 			savePageLinks(address, localLinks, currentWeight);
 			savePage(address, currentWeight);
 			System.out.println(currentWeight);
-			if (shouldStopCrawling()) {
-				return;
-			}
 			System.out.println("Continuing crawling");
 			LinkedHashMap<String, String> map = mDownloader.getClickableLinks();
 			if (map != null) {
@@ -121,6 +158,10 @@ public class MainCrawler {
 	
 	private boolean crawlHighest(String query) {
 		String highestAddr = getHighestScoredLink();
+		if (shouldStopCrawling()) {
+			return false;
+		}
+		
 		if (highestAddr != null) {
 			crawl(highestAddr, query);
 			return true;
@@ -188,7 +229,6 @@ public class MainCrawler {
 			try {
 				url = new URL(prefix);
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if (url != null) {
