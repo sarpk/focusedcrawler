@@ -7,7 +7,8 @@ import edu.mit.jwi.IDictionary;
  * @author Sarp
  */
 public class ExampleDocumentHandler {
-	private final String WIKI_RANDOM_PAGE = "http://en.wikipedia.org/wiki/Special:Random";
+	//private final String WIKI_RANDOM_PAGE = "http://en.wikipedia.org/wiki/Special:Random";
+	private final String LONG_WIKI_ARTICLE = "http://en.wikipedia.org/wiki/2013_in_American_television";
 	private String address;
 	private IDictionary dictionary;
 	//private LinkedHashMap<String, LinkedHashMap<String, Integer>> termHash;
@@ -16,8 +17,9 @@ public class ExampleDocumentHandler {
 	 * Constructor uses Wikipedia Random page to handle words
 	 */
 	public ExampleDocumentHandler() {
-		init(WIKI_RANDOM_PAGE);
-		startHandling(5);
+		//init(WIKI_RANDOM_PAGE);
+		init(LONG_WIKI_ARTICLE);
+		startHandling(0);
 	}
 
 	/**
