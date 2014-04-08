@@ -1,18 +1,13 @@
 package downloader;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 /**
@@ -70,23 +65,19 @@ public class Parse {
 		return linkMap;
 	}
 	
-	public Map.Entry<Integer,ArrayList<String>> getElementsTermOccuranceWithLinks(String term) {
-		Elements elementsInTerm = document.getElementsContainingText(term);
-		if (elementsInTerm == null) {
-			return new AbstractMap.SimpleEntry<Integer, ArrayList<String>>(0, null);
-		}
-		Integer num = elementsInTerm.size();
-		if (num == null) {
-			return new AbstractMap.SimpleEntry<Integer, ArrayList<String>>(0, null);
-		}
-		return new AbstractMap.SimpleEntry<Integer, ArrayList<String>>
-			(num, setClosestLinksInElements(elementsInTerm, term));
-	}
-	
+	/**
+	 * 
+	 * @return Splited text
+	 */
 	public List<String> getSplitText() {
 		return splitText;
 	}
 	
+	/**
+	 * 
+	 * @param anchorLink Given Anchorlink, must start with hashtag(#)
+	 * @return Set of links in String
+	 */
 	public LinkedHashSet<String> anchorlinkHandle(String anchorLink) {
 		LinkedHashSet<String> anchorLinks = new LinkedHashSet<String>();//Avoid duplicate links
 		anchorLink = anchorLink.substring(1);//get rid off hashtag
@@ -119,31 +110,6 @@ public class Parse {
 		splitText = Arrays.asList(xmpDocument.body().text().split(splitter));
 	}
 	
-	private ArrayList<String> setClosestLinksInElements(Elements elementsInTerm, String term) {
-		ArrayList<String> links = new ArrayList<String>();   
-		for (Element element : elementsInTerm) {
-		    	Node nodeWithText = getFirstNodeContainingText(element.childNodes(), term);
-		        Element closestLink = getClosestLink(nodeWithText, 0);
-		        if (closestLink != null) {
-		        	String foundLink = closestLink.attr("abs:href");
-		        	//System.out.println("Link closest to '" + term + "': " + foundLink);
-		        	links.add(foundLink);
-		        }
-		   }
-		return links;
-	}
-	
-	
-	/*public void setClosestLinksToTerm(String term) {
-	   for (Element element : document.getElementsContainingText(term)) {
-		//Element element = document.getElementsContainingOwnText(term).first();
-	    	Node nodeWithText = getFirstNodeContainingText(element.childNodes(), term);
-	        Element closestLink = getClosestLink(nodeWithText, 0);
-	        if (closestLink != null) {
-	        	System.out.println("Link closest to '" + term + "': " + closestLink.attr("abs:href"));	
-	        }	        
-	    }
-	}*/
 	
 	private void setLinks() {
 		linkMap = new LinkedHashMap<String, String>();
@@ -166,50 +132,5 @@ public class Parse {
 		for (String bodyW : body) {
 			bodyWordsSet.add(bodyW);
 		}
-	}
-	
-	private Element getClosestLink(Node node, int depth) {
-		if (depth > 20) {
-			return null;
-		}
-		//System.out.println(depth);
-	    Element linkElem = null;
-	    if (node instanceof Element) {
-	        Element element = (Element) node;
-	        linkElem = element.getElementsByTag("a").first();
-	    }
-	    if (linkElem != null) {
-	        return linkElem;
-	    }
-
-	    // This node wasn't a link. try next one
-	    if (node == null) {
-	    	return null;
-	    }
-	    
-	    linkElem = getClosestLink(node.nextSibling(), depth+1);
-	    if (linkElem != null) {
-	        return linkElem;
-	    }
-
-	    // Wasn't next link. try previous
-	    linkElem = getClosestLink(node.previousSibling(), depth+1);
-	    if (linkElem != null) {
-	        return linkElem;
-	    }
-
-	    return null;
-	}
-
-	private Node getFirstNodeContainingText(List<Node> nodes, String text) {
-	    for (Node node : nodes) {
-	        if (node instanceof TextNode) {
-	            String nodeText = ((TextNode) node).getWholeText();
-	            if (nodeText.contains(text)) {
-	                return node;
-	            }
-	        }
-	    }
-	    return null;
 	}
 }

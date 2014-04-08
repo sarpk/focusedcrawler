@@ -1,9 +1,7 @@
 package downloader;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 
 /**
@@ -64,13 +62,40 @@ public class MainDownloader {
 		return parser.getLinks();
 	}
 	
-	public Map.Entry<Integer,ArrayList<String>> setClosestLinksToTerm(String term) {
-		return parser.getElementsTermOccuranceWithLinks(term);
+
+	/**
+	 * 
+	 * @return The amount of text that was split
+	 */
+	public int getSplitTextAmount() {
+		int splitTextSize = 0;
+		if (parser.getSplitText() != null) {  
+			splitTextSize = parser.getSplitText().size();
+		}
+		return splitTextSize;
 	}
 	
-	public Parse getParser() {
-		return parser;
+	/**
+	 * 
+	 * @param index of split text
+	 * @return given index of split, if not existing empty String
+	 */
+	public String getSplitText(int index) {
+		String returnText = "";
+		if (parser.getSplitText() != null) {  
+			returnText = parser.getSplitText().get(index);
+		}
+		return returnText;
 	}
-
+	
+	/**
+	 * Parser wrapper for anchorLinkHandle
+	 * @param anchorLink
+	 * @return
+	 */
+	public LinkedHashSet<String> getExternalLinksFromAnchor(String anchorLink) {
+		return parser.anchorlinkHandle(anchorLink);
+	}
+		
 	
 }

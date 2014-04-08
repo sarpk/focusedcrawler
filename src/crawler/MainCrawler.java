@@ -10,7 +10,6 @@ import org.lemurproject.kstem.KrovetzStemmer;
 
 import query.QueryStore;
 import downloader.MainDownloader;
-import downloader.Parse;
 
 /**
  * Main Crawler Class that drives the crawler
@@ -76,13 +75,9 @@ public class MainCrawler {
 			System.out.println("Page is downloaded");
 			Integer currentWeight = 0;
 			LinkedHashMap<String,Double> localLinks = new LinkedHashMap<String,Double>();
-			int splitTextSize = 0;
-			try {
-				splitTextSize = mDownloader.getParser().getSplitText().size();
-			}
-			catch (Exception e) {e.printStackTrace(System.err);}
+			int splitTextSize = mDownloader.getSplitTextAmount();
 			for (int i = 0; i < splitTextSize; i++) {
-				String splitText = mDownloader.getParser().getSplitText().get(i);
+				String splitText = mDownloader.getSplitText(i);
 				if (!splitText.contains("</a>")) {//Not href
 			    	String content = splitText.trim();
 			    	String[] textContents = content.split("[^a-zA-Z]+");
@@ -92,19 +87,16 @@ public class MainCrawler {
 						if (wordScore != 0) {
 							int getInd = -1;
 							if((j >= textContents.length/2) && ((i+1) < splitTextSize ) &&
-									mDownloader.getParser().getSplitText().get(i+1)
-									.contains("</a>")) {
+									mDownloader.getSplitText(i+1).contains("</a>")) {
 								getInd = i+1;
 							}
 							else if (((i-1) >= 0) &&
-							mDownloader.getParser().getSplitText().get(i-1)
-							.contains("</a>")) {
+							mDownloader.getSplitText(i-1).contains("</a>")) {
 								getInd = i-1;
 							}
 							
 							if (getInd != -1) {
-								String hrefLink = 
-										mDownloader.getParser().getSplitText().get(getInd);
+								String hrefLink = mDownloader.getSplitText(getInd);
 								String hrefLinkAttr = 
 										Jsoup.parse(hrefLink, "").select("a[href]").attr("href");
 								//System.out.println(hrefLinkAttr);
@@ -118,23 +110,7 @@ public class MainCrawler {
 			    	}
 				}
 			}
-			
-			/*for (String word : mDownloader.getBodySet()) {
-				Integer wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
-				if (wordScore != 0) {
-					Entry<Integer, ArrayList<String>> closeLinkEnt = 
-							mDownloader.setClosestLinksToTerm(word);
-					Double linkScore = (wordScore.doubleValue()/
-							qStore.getAmountEntries(query).doubleValue()*0.9);
-					System.out.println(word + ": " +linkScore);
-					/*for (String lAddr : closeLinkEnt.getValue()) {
-						//localLinks.put(lAddr, linkScore);
-					}
-					wordScore *= closeLinkEnt.getKey();
-				}
-				currentWeight += wordScore;
-			}*/
-			savePageLinks(address, localLinks, currentWeight, mDownloader.getParser());
+			savePageLinks(address, localLinks, currentWeight, mDownloader);
 			savePage(address, currentWeight);
 			System.out.println(currentWeight);
 			System.out.println("Continuing crawling");
@@ -196,12 +172,12 @@ public class MainCrawler {
 	}
 	
 	private void savePageLinks(String prefix, LinkedHashMap<String, Double> localLinks,
-			Integer currentWeight, Parse parse) {
+			Integer currentWeight, MainDownloader mDownloader) {
 		for (Entry<String,Double> linkEn: localLinks.entrySet()) {
 			Double linkWeight = linkEn.getValue()*currentWeight;
 			String address = linkEn.getKey();
 			if (address.startsWith("#")) {//Anchorlink
-				for (String anchorLinks : parse.anchorlinkHandle(address) ) {
+				for (String anchorLinks : mDownloader.getExternalLinksFromAnchor(address)) {
 					saveLink(prefix, anchorLinks, linkWeight);
 				}
 			}else {
