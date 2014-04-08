@@ -22,7 +22,7 @@ public class MainCrawler {
 	private Integer weightThreshold;
 	private Integer amountOfCrawledPage;
 	
-	private final Integer maxCrawlPage = 30;
+	private final Integer maxCrawlPage = 50;
 	private ScorePriorityMap crawledLinks;
 	private ScorePriorityMap highestScoredPages;
 	
@@ -134,6 +134,7 @@ public class MainCrawler {
 		}
 		else {
 			System.out.println("Download is not finished");
+			amountOfCrawledPage--;//Then not crawled
 		}
 	}
 	
