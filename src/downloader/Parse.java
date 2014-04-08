@@ -87,8 +87,26 @@ public class Parse {
 		return splitText;
 	}
 	
+	public LinkedHashSet<String> anchorlinkHandle(String anchorLink) {
+		LinkedHashSet<String> anchorLinks = new LinkedHashSet<String>();//Avoid duplicate links
+		anchorLink = anchorLink.substring(1);//get rid off hashtag
+		System.out.println("Handling anchorlink: " + anchorLink);
+		Element anchorElement = document.getElementById(anchorLink);
+		if (anchorElement == null) { return anchorLinks;}
+		Elements links = anchorElement.select("a[href]");
+		for (Element link : links) {
+			// Store values from href attribute
+			String attr = link.attr("href");
+			if (!attr.startsWith("#")) {//Potential loop if another anchor link
+				System.out.println("attr: " + attr);
+				anchorLinks.add(attr);
+			}
+		}
+		return anchorLinks;
+	}
+	
 	private void setXMPForHref() {
-		if (document == null) {
+		if (document == null || document.body() == null) {
 			return;
 		}
 		String splitWrapper = String.format("<xmp>%s</xmp>%s", splitter,splitter);

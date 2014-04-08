@@ -2,6 +2,8 @@ package crawler;
 
 import java.util.Scanner;
 
+import org.lemurproject.kstem.KrovetzStemmer;
+
 import query.ExampleDocumentHandler;
 import query.QueryStore;
 
@@ -12,13 +14,18 @@ public class MainMeth {
 		new ExampleDocumentHandler();
 		QueryStore qStore = QueryStore.getInstance();
 
-		
+		KrovetzStemmer kStemmer = new KrovetzStemmer();
+		String input = "Today I got a gun, don't shoot me with guns!";
+		for (String tok : input.split("[^a-zA-Z]+")) {
+			System.out.print(kStemmer.stem(tok) + " ");
+		}
+		System.out.println("");
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Please enter the query to be searched");
-		String query = scan.nextLine();
+		String query = kStemmer.stem(scan.nextLine());
 		while (qStore.getTermsSize(query) == 0) {
 			System.out.println("The query doesn't exist please change your query");
-			query = scan.nextLine();
+			query = kStemmer.stem(scan.nextLine());
 		}
 		
 		System.out.println("These terms exist in your query:");
@@ -27,11 +34,14 @@ public class MainMeth {
 		}
 		System.out.println("Please enter the root address to be crawled");
 		String addr = scan.nextLine();
+		long startTime = System.currentTimeMillis();
 		System.out.println("Crawling: " + addr);
 		MainCrawler mCrawl = new MainCrawler();
 		mCrawl.crawlerRunner(addr, query);
 		scan.close();
 		mCrawl.printTop10Pages();
+	    long endTime = System.currentTimeMillis();
+	    System.out.println("Total execution time: " + (endTime-startTime)/1000 + " sec"); 
 
 	}
 }

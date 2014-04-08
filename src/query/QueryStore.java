@@ -2,6 +2,8 @@ package query;
 
 import java.util.LinkedHashMap;
 
+import org.lemurproject.kstem.KrovetzStemmer;
+
 /**
  * Singleton class that stores term vs term hash
  * @author Sarp
@@ -112,6 +114,9 @@ public class QueryStore {
 	 * @param score is the score of term2 for term1
 	 */
 	public void setTermVsTermAndScore(String term1, String term2, Integer score) {
+		KrovetzStemmer kStemmer = new KrovetzStemmer();
+		term1 = kStemmer.stem(term1);
+		term2 = kStemmer.stem(term2);
 		LinkedHashMap<String, Integer> entry = termHash.get(term1);
 		if (entry == null) {
 			entry = new LinkedHashMap<String, Integer>();
