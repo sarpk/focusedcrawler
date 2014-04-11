@@ -1,5 +1,7 @@
 package crawler;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Scanner;
 
 import org.lemurproject.kstem.KrovetzStemmer;
@@ -8,14 +10,30 @@ import query.ExampleDocumentHandler;
 import query.QueryStore;
 
 public class MainMeth {
-
 	public static void main(String[] args) {
+		int threadNo = 50;
+		int pageAmount = 500;
+		Iterator<String> argIt = Arrays.asList(args).iterator();
+		while (argIt.hasNext()) {
+			String argTag = argIt.next();
+			if (argTag.equals("-thread") && argIt.hasNext()) {
+				threadNo = Integer.valueOf(argIt.next());
+			}
+			else if (argTag.equals("-pAmount") && argIt.hasNext()) {
+				pageAmount = Integer.valueOf(argIt.next());
+			}
+			else {
+				System.out.println("-thread for amount of thread(50 by default)");
+				System.out.println("-pAmount for amount of page to download(500 by default)");
+				return;
+			}
+		}
 		/*ExampleDocumentHandler docHandle = */
 		new ExampleDocumentHandler();
 		QueryStore qStore = QueryStore.getInstance();
 
 		KrovetzStemmer kStemmer = new KrovetzStemmer();
-		String input = "Today I got a gun, don't shoot me with guns!";
+		String input = "Singular phone plural phones. Stemming works!";
 		for (String tok : input.split("[^a-zA-Z]+")) {
 			System.out.print(kStemmer.stem(tok) + " ");
 		}
@@ -37,7 +55,7 @@ public class MainMeth {
 		scan.close();
 		long startTime = System.currentTimeMillis();
 		System.out.println("Crawling: " + addr);
-		ThreadController tControl = new ThreadController(50, query, 1000, startTime);
+		ThreadController tControl = new ThreadController(threadNo, query, pageAmount, startTime);
 		tControl.initialStart(addr);
 		
 		/*
