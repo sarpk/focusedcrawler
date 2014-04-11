@@ -13,7 +13,7 @@ import downloader.MainDownloader;
 
 /**
  * Main Crawler Class that drives the crawler
- * 
+ * @deprecated Use ThreadController for Multi-threaded crawling
  * @author Sarp
  * 
  */
@@ -22,7 +22,7 @@ public class MainCrawler {
 	private Integer weightThreshold;
 	private Integer amountOfCrawledPage;
 	
-	private final Integer maxCrawlPage = 50;
+	private final Integer maxCrawlPage = 20;
 	private ScorePriorityMap crawledLinks;
 	private ScorePriorityMap highestScoredPages;
 	
