@@ -82,7 +82,10 @@ public class Parse {
 		LinkedHashSet<String> anchorLinks = new LinkedHashSet<String>();//Avoid duplicate links
 		anchorLink = anchorLink.substring(1);//get rid off hashtag
 		System.out.println("Handling anchorlink: " + anchorLink);
-		Element anchorElement = document.getElementById(anchorLink);
+		Element anchorElement = null;
+		try {
+			anchorElement = document.getElementById(anchorLink);
+		} catch (Exception exception) { return anchorLinks;}
 		if (anchorElement == null) { return anchorLinks;}
 		Elements links = anchorElement.select("a[href]");
 		for (Element link : links) {
