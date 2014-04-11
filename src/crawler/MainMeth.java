@@ -34,14 +34,18 @@ public class MainMeth {
 		}
 		System.out.println("Please enter the root address to be crawled");
 		String addr = scan.nextLine();
+		scan.close();
 		long startTime = System.currentTimeMillis();
 		System.out.println("Crawling: " + addr);
+		ThreadController tControl = new ThreadController(50, query, 1000, startTime);
+		tControl.initialStart(addr);
+		
+		/*
 		MainCrawler mCrawl = new MainCrawler();
 		mCrawl.crawlerRunner(addr, query);
-		scan.close();
 		mCrawl.printTop10Pages();
 	    long endTime = System.currentTimeMillis();
-	    System.out.println("Total execution time: " + (endTime-startTime)/1000 + " sec"); 
+	    System.out.println("Total execution time: " + (endTime-startTime)/1000 + " sec");*/ 
 
 	}
 }

@@ -19,6 +19,8 @@ public class ScorePriorityMap {
 			addAddressToMaps(address, score);
 		}
 		else if (scoreShouldBeUpdated(address)) {//address is added before needs score updating
+			//System.out.println(score);
+			//System.out.println(linksOrdered.get(address));
 			Double newScore = linksOrdered.get(address) + score;
 			linksOrdered.put(address, newScore);
 		}

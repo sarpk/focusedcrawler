@@ -81,7 +81,7 @@ public class Parse {
 	public LinkedHashSet<String> anchorlinkHandle(String anchorLink) {
 		LinkedHashSet<String> anchorLinks = new LinkedHashSet<String>();//Avoid duplicate links
 		anchorLink = anchorLink.substring(1);//get rid off hashtag
-		System.out.println("Handling anchorlink: " + anchorLink);
+		//System.out.println("Handling anchorlink: " + anchorLink);
 		Element anchorElement = null;
 		try {
 			anchorElement = document.getElementById(anchorLink);
@@ -92,7 +92,7 @@ public class Parse {
 			// Store values from href attribute
 			String attr = link.attr("href");
 			if (!attr.startsWith("#")) {//Potential loop if another anchor link
-				System.out.println("attr: " + attr);
+				//System.out.println("attr: " + attr);
 				anchorLinks.add(attr);
 			}
 		}
