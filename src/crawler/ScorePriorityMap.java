@@ -1,8 +1,10 @@
 package crawler;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.TreeMap;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 public class ScorePriorityMap {
@@ -24,6 +26,10 @@ public class ScorePriorityMap {
 			Double newScore = linksOrdered.get(address) + score;
 			linksOrdered.put(address, newScore);
 		}
+	}
+	
+	public List<String> getHighestScoreAddressesWithoutPopping() {
+		return Lists.reverse(Lists.newArrayList(linksOrdered.keySet()));
 	}
 	
 	public String getHighestScoreAddress() {

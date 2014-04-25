@@ -22,6 +22,7 @@ public class MainWebController {
 					new InetSocketAddress(PORT_NO), 0);
 			server.createContext("/", new CrawlWrapperHandler());
 			server.createContext("/searchReq", new SearchReqHandler());
+			server.createContext("/crawl", new CrawlSessionHandler());
 			server.setExecutor(null); // creates a default executor
 			server.start();
 			

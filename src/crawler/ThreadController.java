@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
@@ -22,12 +23,15 @@ public class ThreadController {
 	private int weightThreshold;
 	private Semaphore reportSem;
 	private long startTime;
+	private long lastTime;
+	private boolean searchFinished;
 	
 	public ThreadController(String query, long startTime) {
 		this.bucketSize = MainSettings.THREAD_AMOUNT;
 		this.maxCrawlAmount = MainSettings.PAGE_AMOUNT;
 		currentCrawled = 0;
 		weightThreshold = 0;
+		searchFinished = false;
 		this.startTime = startTime;
 		reportSem = new Semaphore(1);
 		highestScoredPages = new ScorePriorityMap();
@@ -136,6 +140,37 @@ public class ThreadController {
 		reportSem.release();
 	}
 	
+	/**
+	 * 
+	 * @return If search is finished or not
+	 */
+	public boolean isSearchStopped() {
+		return searchFinished;
+	}
+	
+	/**
+	 * 
+	 * @return The elapsed time in seconds, does not increment after search result
+	 */
+	public long getElapsedTime() {
+		long endTime = 0;
+		if (searchFinished) {
+			endTime = lastTime;
+		} else {
+			endTime = System.currentTimeMillis();
+		}
+		
+	    return (endTime-startTime)/1000;
+	}
+	
+	/**
+	 * Returns Addresses without popping, safe to call multiple times
+	 * @return Highest Scored Addresses
+ 	 */
+	public List<String> getHighestSavedPages() {
+		return highestScoredPages.getHighestScoreAddressesWithoutPopping();
+	}
+	
 	private int hashString(String url) {
 		URL urlDomain = null;
 		try {
@@ -178,8 +213,9 @@ public class ThreadController {
 				break;
 			}
 		}
-		long endTime = System.currentTimeMillis();
-	    System.out.println("Total execution time: " + (endTime-startTime)/1000 + " sec"); 
+		lastTime = System.currentTimeMillis();
+		searchFinished = true;
+	    System.out.println("Total execution time: " + getElapsedTime() + " sec"); 
 	}
 	
 	private String getHighestScoredPages() {

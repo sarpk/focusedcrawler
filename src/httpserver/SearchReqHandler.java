@@ -17,11 +17,14 @@ import crawler.ThreadController;
 public class SearchReqHandler implements HttpHandler {
 
 	public void handle(HttpExchange exchange) {
+		//System.out.println("handling");
 		String requestMethod = exchange.getRequestMethod();
 		if (requestMethod.equalsIgnoreCase("GET")) {
 			String warning = null;
 			String URL = null;
 			String query = null;
+			boolean redirect = false;
+			String crawlId = null;
 			if (exchange.getRequestURI().getQuery() != null) {
 				String httpQuery = null;
 				try {
@@ -56,11 +59,15 @@ public class SearchReqHandler implements HttpHandler {
 					warning = String.format("The query \"%s\" doesn't exist please change your query", query);
 				}
 				
-				long startTime = System.currentTimeMillis();
+				TControlSessions tCSessions = TControlSessions.getInstance();
 				System.out.println("Crawling: " + URL);
-				ThreadController tControl = new ThreadController(query, startTime);
+				crawlId = tCSessions.newCrawler(query);
+				System.out.println(crawlId);
+				ThreadController tControl = tCSessions.getController(crawlId);
 				if (!tControl.initialStart(URL)) {
 					warning = String.format("The address \"%s\" is not loaded", URL);
+				}else {
+					redirect = true;
 				}
 			}
 			
@@ -90,7 +97,6 @@ public class SearchReqHandler implements HttpHandler {
 					+ "<p><input type=\"submit\" value=\"Search\" /></p></form>";
 			
 
-
 			String writeResponse = null;
 
 			if (warning == null) {
@@ -99,26 +105,36 @@ public class SearchReqHandler implements HttpHandler {
 			else {
 				writeResponse = top + backMessage + bottom;
 			}
-			
 			try {
-				exchange.sendResponseHeaders(200, writeResponse.length());
+				if (!redirect) {
+					exchange.sendResponseHeaders(200, writeResponse.length());
+				}
+				else {
+					String redirectAddr = String.format("/crawl?%s", crawlId);
+					exchange.getResponseHeaders().set("Location", redirectAddr);
+					exchange.sendResponseHeaders(302, -1);
+					System.out.println("redirecting");
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			OutputStream os = exchange.getResponseBody();
-			try {
-				os.write(writeResponse.getBytes());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (!redirect) {
+				OutputStream os = exchange.getResponseBody();
+				try {
+					os.write(writeResponse.getBytes());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					os.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			try {
-				os.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			//exchange.close();
 		}
 	}
 }
