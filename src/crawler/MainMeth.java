@@ -1,5 +1,7 @@
 package crawler;
 
+import httpserver.MainWebController;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -28,10 +30,17 @@ public class MainMeth {
 				return;
 			}
 		}
+		
+		MainSettings.THREAD_AMOUNT = threadNo;
+		MainSettings.PAGE_AMOUNT = pageAmount;
+		
 		/*ExampleDocumentHandler docHandle = */
 		new ExampleDocumentHandler();
 		QueryStore qStore = QueryStore.getInstance();
 
+		MainWebController mControl = new MainWebController();
+		mControl.setup();
+		
 		KrovetzStemmer kStemmer = new KrovetzStemmer();
 		String input = "Singular phone plural phones. Stemming works!";
 		for (String tok : input.split("[^a-zA-Z]+")) {
@@ -55,7 +64,7 @@ public class MainMeth {
 		scan.close();
 		long startTime = System.currentTimeMillis();
 		System.out.println("Crawling: " + addr);
-		ThreadController tControl = new ThreadController(threadNo, query, pageAmount, startTime);
+		ThreadController tControl = new ThreadController(query, startTime);
 		tControl.initialStart(addr);
 		
 		/*
