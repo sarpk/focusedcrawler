@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="edu.mit.jwi_2.3.0_jdk.jar"/>
 	<classpathentry kind="lib" path="kstem-3.4.jar"/>
 	<classpathentry kind="lib" path="guava-16.0.1.jar"/>
+	<classpathentry kind="lib" path="http-20070405.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

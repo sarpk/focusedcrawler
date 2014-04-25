@@ -23,15 +23,21 @@ public class ThreadCrawler implements Runnable {
 	}
 	
 	public void run() {
+		runCrawler();
+	}
+	
+	public boolean runCrawler() {
+		boolean result = false;
 		String addr = getHighestScoredLink();
 		//System.out.println("Thread no: " + this.threadNo + " is running");
 		if (addr != null) {
-			boolean result = crawl(addr);
+			result = crawl(addr);
 			tControl.tReport(result, this);
 		}else {
 			tControl.tReport(false, this);
 		}
 		//System.out.println("Thread no: " + this.threadNo + " is finished");
+		return result;
 	}
 	
 	public int getThreadNo() {

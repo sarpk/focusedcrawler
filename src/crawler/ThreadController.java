@@ -23,9 +23,9 @@ public class ThreadController {
 	private Semaphore reportSem;
 	private long startTime;
 	
-	public ThreadController(int bucketSize, String query, final int maxCrawlAmount, long startTime) {
-		this.bucketSize = bucketSize;
-		this.maxCrawlAmount = maxCrawlAmount;
+	public ThreadController(String query, long startTime) {
+		this.bucketSize = MainSettings.THREAD_AMOUNT;
+		this.maxCrawlAmount = MainSettings.PAGE_AMOUNT;
 		currentCrawled = 0;
 		weightThreshold = 0;
 		this.startTime = startTime;
@@ -43,13 +43,13 @@ public class ThreadController {
 		}
 	}
 
-	public void initialStart(String url) {
+	public boolean initialStart(String url) {
 		int hashNum = hashString(url);
 		ScorePriorityMap addressMap = bucketToBeCrawled.get(hashNum);
 		addressMap.addAddress(url, 0.1);
 		ThreadCrawler firstChosenThread = crawlerThreads.get(hashNum);
 		freeThreads.remove(firstChosenThread);
-		firstChosenThread.run();  //start();
+		return firstChosenThread.runCrawler();  //start();
 	}
 	
 	
