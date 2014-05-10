@@ -73,7 +73,7 @@ public class MainCrawler {
 		if (mDownloader.didDownloadFinish()) {
 			KrovetzStemmer kStemmer = new KrovetzStemmer();
 			System.out.println("Page is downloaded");
-			Integer currentWeight = 0;
+			Double currentWeight = 0.0;
 			LinkedHashMap<String,Double> localLinks = new LinkedHashMap<String,Double>();
 			int splitTextSize = mDownloader.getSplitTextAmount();
 			for (int i = 0; i < splitTextSize; i++) {
@@ -83,7 +83,7 @@ public class MainCrawler {
 			    	String[] textContents = content.split("[^a-zA-Z]+");
 			    	for (int j = 0; j < textContents.length; j++ ) {
 			    		String word = kStemmer.stem(textContents[j]);
-			    		Integer wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
+			    		Double wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
 						if (wordScore != 0) {
 							int getInd = -1;
 							if((j >= textContents.length/2) && ((i+1) < splitTextSize ) &&
@@ -118,7 +118,7 @@ public class MainCrawler {
 			if (map != null) {
 				for (Entry<String, String> pair : map.entrySet()) {
 					String[] linkContents = pair.getValue().split("[^a-zA-Z]+");
-					Integer linkWeight = 0;
+					Double linkWeight = 0.0;
 					for (String linkContent : linkContents) {
 						linkWeight += qStore.getTermvsTermScore(query, 
 								kStemmer.stem(linkContent));
@@ -173,7 +173,7 @@ public class MainCrawler {
 	}
 	
 	private void savePageLinks(String prefix, LinkedHashMap<String, Double> localLinks,
-			Integer currentWeight, MainDownloader mDownloader) {
+			Double currentWeight, MainDownloader mDownloader) {
 		for (Entry<String,Double> linkEn: localLinks.entrySet()) {
 			Double linkWeight = linkEn.getValue()*currentWeight;
 			String address = linkEn.getKey();
@@ -205,7 +205,7 @@ public class MainCrawler {
 	 * @param address
 	 * @param currentWeight
 	 */
-	private void savePage(String address, Integer currentWeight) {
+	private void savePage(String address, Double currentWeight) {
 		if (currentWeight >= getWeightThreshold()) {
 			//TO-DO Save page with weight in a priority queue
 			System.out.println("Saving page: " + address);
@@ -239,9 +239,9 @@ public class MainCrawler {
 	
 	/**
 	 * Sets the weight threshold
-	 * @param weight
+	 * @param currentWeight
 	 */
-	private void pageWeight(Integer weight) {
-		weightThreshold = Math.max(weightThreshold, weight/2);
+	private void pageWeight(Double currentWeight) {
+		weightThreshold = Math.max(weightThreshold,(int)(currentWeight/2));
 	}
 }

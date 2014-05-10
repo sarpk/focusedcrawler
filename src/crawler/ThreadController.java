@@ -59,7 +59,7 @@ public class ThreadController {
 	
 
 	public void savePageLinks(String prefix, LinkedHashMap<String, Double> localLinks,
-			Integer currentWeight, MainDownloader mDownloader) {
+			Double currentWeight, MainDownloader mDownloader) {
 		for (Entry<String,Double> linkEn: localLinks.entrySet()) {
 			Double linkWeight = linkEn.getValue()*currentWeight;
 			String address = linkEn.getKey();
@@ -78,7 +78,7 @@ public class ThreadController {
 	 * @param address
 	 * @param currentWeight
 	 */
-	public void savePage(String address, Integer currentWeight) {
+	public void savePage(String address, Double currentWeight) {
 		if (currentWeight >= weightThreshold) {
 			System.out.println("Saving page: " + address);
 			highestScoredPages.addAddress(address, currentWeight.doubleValue());
@@ -192,10 +192,10 @@ public class ThreadController {
 	
 	/**
 	 * Sets the weight threshold
-	 * @param weight
+	 * @param currentWeight
 	 */
-	private void pageWeight(Integer weight) {
-		weightThreshold = Math.max(weightThreshold, weight/2);
+	private void pageWeight(Double currentWeight) {
+		weightThreshold = Math.max(weightThreshold, (int) (currentWeight/2.0));
 	}
 	
 	/**

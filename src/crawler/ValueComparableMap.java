@@ -13,7 +13,7 @@ public class ValueComparableMap<K extends Comparable<K>,V> extends TreeMap<K,V> 
 	//A map for doing lookups on the keys for comparison so we don't get infinite loops
     private final Map<K, V> valueMap;
 
-    ValueComparableMap(final Ordering<? super V> partialValueOrdering) {
+    public ValueComparableMap(final Ordering<? super V> partialValueOrdering) {
         this(partialValueOrdering, new HashMap<K,V>());
     }
 

@@ -58,7 +58,7 @@ public class ThreadCrawler implements Runnable {
 		if (mDownloader.didDownloadFinish()) {
 			KrovetzStemmer kStemmer = new KrovetzStemmer();
 			//System.out.println("Page is downloaded");
-			Integer currentWeight = 0;
+			Double currentWeight = 0.0;
 			LinkedHashMap<String,Double> localLinks = new LinkedHashMap<String,Double>();
 			int splitTextSize = mDownloader.getSplitTextAmount();
 			for (int i = 0; i < splitTextSize; i++) {
@@ -68,7 +68,7 @@ public class ThreadCrawler implements Runnable {
 			    	String[] textContents = content.split("[^a-zA-Z]+");
 			    	for (int j = 0; j < textContents.length; j++ ) {
 			    		String word = kStemmer.stem(textContents[j]);
-			    		Integer wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
+			    		Double wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
 						if (wordScore != 0) {
 							int getInd = -1;
 							if((j >= textContents.length/2) && ((i+1) < splitTextSize ) &&
@@ -102,7 +102,7 @@ public class ThreadCrawler implements Runnable {
 			if (map != null) {
 				for (Entry<String, String> pair : map.entrySet()) {
 					String[] linkContents = pair.getValue().split("[^a-zA-Z]+");
-					Integer linkWeight = 0;
+					Double linkWeight = 0.0;
 					for (String linkContent : linkContents) {
 						linkWeight += qStore.getTermvsTermScore(query, 
 								kStemmer.stem(linkContent));
