@@ -10,7 +10,7 @@ import org.lemurproject.kstem.KrovetzStemmer;
  */
 public class QueryStore {
 	private static QueryStore singleton = null;
-	private LinkedHashMap<String, LinkedHashMap<String, Integer>> termHash;
+	private LinkedHashMap<String, LinkedHashMap<String, Double>> termHash;
 	/**
 	 * @return The instance of singleton
 	 */
@@ -25,7 +25,7 @@ public class QueryStore {
 	 * @param term
 	 * @return The hash of given term
 	 */
-	public LinkedHashMap<String, Integer> getTerms(String term) {
+	public LinkedHashMap<String, Double> getTerms(String term) {
 		return termHash.get(term);
 	}
 	
@@ -35,7 +35,7 @@ public class QueryStore {
 	 * @return size of terms, 0 if term doesn't exist
 	 */
 	public Integer getTermsSize(String term) {
-		LinkedHashMap<String, Integer> entry = termHash.get(term);
+		LinkedHashMap<String, Double> entry = termHash.get(term);
 		if (entry != null) {
 			return entry.size();
 		}
@@ -48,7 +48,7 @@ public class QueryStore {
 	 * @return true if term exists in hash
 	 */
 	public boolean termExists(String term) {
-		LinkedHashMap<String, Integer> entry = termHash.get(term);
+		LinkedHashMap<String, Double> entry = termHash.get(term);
 		if (entry != null) {
 			return true;
 		}
@@ -61,7 +61,7 @@ public class QueryStore {
 	 * @return True if term2 exists in term1 or term1 == term2, otherwise false
 	 */
 	public boolean termvsTermExists(String term1, String term2) {
-		LinkedHashMap<String, Integer> entry = termHash.get(term1);
+		LinkedHashMap<String, Double> entry = termHash.get(term1);
 		if (entry != null) {
 			if (entry.get(term2) != null) {
 				return true;
@@ -79,13 +79,13 @@ public class QueryStore {
 	 * @param term2
 	 * @return score of term2 in term1, if doesn't exist 0
 	 */
-	public Integer getTermvsTermScore(String term1, String term2) {
-		Integer score = 0;
-		LinkedHashMap<String, Integer> entry = termHash.get(term1);
+	public Double getTermvsTermScore(String term1, String term2) {
+		Double score = 0.0;
+		LinkedHashMap<String, Double> entry = termHash.get(term1);
 		if (entry != null) {
 			score = entry.get(term2);
 			if (score == null) {
-				score = 0;
+				score = 0.0;
 			}
 		}
 		if (term1.equals(term2)) {
@@ -99,12 +99,12 @@ public class QueryStore {
 	 * @param term
 	 * @return The total amount of entries for the given term
 	 */
-	public Integer getAmountEntries(String term) {
-		LinkedHashMap<String, Integer> entry = termHash.get(term);
+	public Double getAmountEntries(String term) {
+		LinkedHashMap<String, Double> entry = termHash.get(term);
 		if (entry != null) {
-			return (entry.size()+2);
+			return (entry.size()+2.0);
 		}
-		return 0;
+		return 0.0;
 	}
 	
 	/**
@@ -113,15 +113,15 @@ public class QueryStore {
 	 * @param term2 is the term to be inside of term1
 	 * @param score is the score of term2 for term1
 	 */
-	public void setTermVsTermAndScore(String term1, String term2, Integer score) {
+	public void setTermVsTermAndScore(String term1, String term2, Double score) {
 		KrovetzStemmer kStemmer = new KrovetzStemmer();
 		term1 = kStemmer.stem(term1);
 		term2 = kStemmer.stem(term2);
-		LinkedHashMap<String, Integer> entry = termHash.get(term1);
+		LinkedHashMap<String, Double> entry = termHash.get(term1);
 		if (entry == null) {
-			entry = new LinkedHashMap<String, Integer>();
+			entry = new LinkedHashMap<String, Double>();
 		}
-		Integer tmpScore = entry.get(term2); 
+		Double tmpScore = entry.get(term2); 
 		if (tmpScore == null) {//add the entry
 			entry.put(term2, score);
 		}
@@ -132,7 +132,7 @@ public class QueryStore {
 	 * Private constructor
 	 */
 	private QueryStore(){
-		termHash = new LinkedHashMap<String, LinkedHashMap<String, Integer>>();
+		termHash = new LinkedHashMap<String, LinkedHashMap<String, Double>>();
 	}
 
 }

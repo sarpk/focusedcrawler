@@ -65,7 +65,7 @@ public class WordNetHashConstructor {
 					if (w.getLemma().matches("^[a-zA-Z]+$")) {// make sure it's
 																// all one word
 						//stringHash.put(w.getLemma(), ++score);
-						qStore.setTermVsTermAndScore(expandingWord, w.getLemma(), ++score);
+						qStore.setTermVsTermAndScore(expandingWord, w.getLemma(), (double) ++score);
 					}
 				}
 			}
