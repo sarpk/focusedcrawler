@@ -8,6 +8,7 @@ import java.net.URLDecoder;
 import org.lemurproject.kstem.KrovetzStemmer;
 
 import query.QueryStore;
+import query.Word2VecHashConstructor;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -51,10 +52,11 @@ public class SearchReqHandler implements HttpHandler {
 			}
 			
 			if (query != null && URL != null) {
-				QueryStore qStore = QueryStore.getInstance();
 				KrovetzStemmer kStemmer = new KrovetzStemmer();
-				
 				query = kStemmer.stem(query);
+				Word2VecHashConstructor.Constructor(query, 1000);
+				
+				QueryStore qStore = QueryStore.getInstance();
 				if (qStore.getTermsSize(query) == 0) {
 					warning = String.format("The query \"%s\" doesn't exist please change your query", query);
 				}
