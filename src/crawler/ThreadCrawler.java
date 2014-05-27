@@ -70,6 +70,7 @@ public class ThreadCrawler implements Runnable {
 			    		String word = kStemmer.stem(textContents[j]);
 			    		Double wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
 						if (wordScore != 0) {
+							//Get the closest href link index
 							int getInd = -1;
 							if((j >= textContents.length/2) && ((i+1) < splitTextSize ) &&
 									mDownloader.getSplitText(i+1).contains("</a>")) {
@@ -79,12 +80,13 @@ public class ThreadCrawler implements Runnable {
 							mDownloader.getSplitText(i-1).contains("</a>")) {
 								getInd = i-1;
 							}
-							
+							//If closest href exists
 							if (getInd != -1) {
 								String hrefLink = mDownloader.getSplitText(getInd);
 								String hrefLinkAttr = 
 										Jsoup.parse(hrefLink, "").select("a[href]").attr("href");
 								//System.out.println(hrefLinkAttr);
+								//TODO change the score
 								Double linkScore = (wordScore.doubleValue()/
 										qStore.getAmountEntries(query).doubleValue()*0.9);
 								//System.out.println(word + ": " +linkScore);
@@ -95,6 +97,7 @@ public class ThreadCrawler implements Runnable {
 			    	}
 				}
 			}
+			//TODO Normalise currentWeight by the total tokens
 			tControl.savePageLinks(address, localLinks, currentWeight, mDownloader);
 			tControl.savePage(address, currentWeight);
 			//System.out.println(currentWeight);
