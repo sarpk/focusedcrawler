@@ -3,6 +3,8 @@ package query;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import crawler.MainSettings;
+
 /**
  * Constructs similarity by given query
  * @author Sarp
@@ -10,8 +12,8 @@ import java.util.Map.Entry;
  */
 public class Word2VecHashConstructor {
 	
-	static void Constructor(String query, int amount, String fileName) {
-		Word2VecDistance w2vDist = new Word2VecDistance(fileName);
+	public static void Constructor(String query, int amount) {
+		Word2VecDistance w2vDist = new Word2VecDistance(MainSettings.WORD2VEC_FILE_NAME);
 		LinkedHashMap<String, Double> results = w2vDist.getWordByScores(query, amount, 0.0);
 		if (results == null) {
 			return;
