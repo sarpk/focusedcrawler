@@ -18,70 +18,30 @@ import crawler.ValueComparableMap;
  * @author Sarp
  */
 public class Word2VecDistance {
-	private static float[][] M;
-	private static int size;
-	private static LinkedHashMap<String, Integer> vocabs;
+	private float[][] M;
+	private int size;
+	private LinkedHashMap<String, Integer> vocabs;
 
-	public static void main(String[] args) {
-		init("wiki.txt");
-		String entry = "to the";
-		getWordByScores(entry, 20, -1.0);
+	public Word2VecDistance(String fileName) {
+		init(fileName);
 	}
-
-	/**
-	 * 
-	 * @param fileName Non-binary filename
-	 */
-	private static void init(String fileName) {
-		File inFile = new File(fileName);
-		Scanner sc = null;
-		try {
-			sc = new Scanner(inFile);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		int words = sc.nextInt();
-		size = sc.nextInt();
-		vocabs = new LinkedHashMap<String, Integer>(words);
-		M = new float[words][size];
-
-		for (int i = 0; i < words; i++) {
-			// vocab[i] = sc.next();
-			vocabs.put(sc.next(), i);
-			// System.out.println(vocab[i]);
-			for (int j = 0; j < size; j++) {
-				M[i][j] = sc.nextFloat();
-			}
-			double len = 0;
-			for (int j = 0; j < size; j++) {
-				len += M[i][j] * M[i][j];
-			}
-			len = Math.sqrt(len);
-			for (int j = 0; j < size; j++) {
-				M[i][j] /= len;
-				//System.out.println(M[i][j]);
-			}
-		}
-		sc.close();
-
-
-
-	}
+	
 	
 	/**
 	 * @param entry to search
 	 * @param maxEl Amount of max top results
 	 * @param minVal Min dist to consider (between -1 to 1)
+	 * @return 
 	 * 
 	 */
-	public static void getWordByScores(String entry, int maxEl, double minVal) {
+	public LinkedHashMap<String, Double> getWordByScores(String entry, int maxEl, double minVal) {
 		
 		String[] entries = entry.split(" ");
 
 		for (int i = 0; i < entries.length; i++) {// check if entry exists
 			Integer index = vocabs.get(entries[i]);
 			if (index == null) {
-				return;
+				return null;
 			}
 			System.out.println("Word " + entries[i] + " is at " + index);
 		}
@@ -122,9 +82,61 @@ public class Word2VecDistance {
 				}
 			}
 		}
-		for (Entry<String, Double> eachEntryTree : highestScores.entrySet()) {
+		
+		LinkedHashMap<String,Double> highestMapScores = new LinkedHashMap<String, Double>(highestScores);
+		for (Entry<String, Double> eachEntryTree : highestMapScores.entrySet()) {
 			System.out.println (eachEntryTree.getKey() + " : " + eachEntryTree.getValue());
 		}
+		
+		return highestMapScores;
 	}
 
+	/**
+	 * 
+	 * @param fileName Non-binary filename
+	 */
+	private void init(String fileName) {
+		File inFile = new File(fileName);
+		Scanner sc = null;
+		try {
+			sc = new Scanner(inFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		int words = sc.nextInt();
+		size = sc.nextInt();
+		vocabs = new LinkedHashMap<String, Integer>(words);
+		M = new float[words][size];
+
+		for (int i = 0; i < words; i++) {
+			// vocab[i] = sc.next();
+			vocabs.put(sc.next(), i);
+			// System.out.println(vocab[i]);
+			for (int j = 0; j < size; j++) {
+				M[i][j] = sc.nextFloat();
+			}
+			double len = 0;
+			for (int j = 0; j < size; j++) {
+				len += M[i][j] * M[i][j];
+			}
+			len = Math.sqrt(len);
+			for (int j = 0; j < size; j++) {
+				M[i][j] /= len;
+				//System.out.println(M[i][j]);
+			}
+		}
+		sc.close();
+
+
+
+	}
+	
+	
+	public static void main(String[] args) {
+		Word2VecDistance w2vDist = new Word2VecDistance("wiki.txt");
+		String entry = "to the";
+		w2vDist.getWordByScores(entry, 20, -1.0);
+	}
 }
+
+
