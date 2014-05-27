@@ -2,10 +2,6 @@ package httpserver;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -30,11 +26,6 @@ public class MainWebController {
 			e.printStackTrace();
 		}
 		
-	}
-	
-	private static String readFile(String path, Charset encoding) throws IOException {
-		byte[] encoded = Files.readAllBytes(Paths.get(path));
-		return encoding.decode(ByteBuffer.wrap(encoded)).toString();
 	}
 	
 }
