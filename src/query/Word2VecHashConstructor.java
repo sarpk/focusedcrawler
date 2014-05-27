@@ -11,9 +11,11 @@ import crawler.MainSettings;
  *
  */
 public class Word2VecHashConstructor {
-	
+	private static Word2VecDistance w2vDist;
 	public static void Constructor(String query, int amount) {
-		Word2VecDistance w2vDist = new Word2VecDistance(MainSettings.WORD2VEC_FILE_NAME);
+		if (w2vDist == null) {//Make sure Word2Vec is initialised only once
+			w2vDist = new Word2VecDistance(MainSettings.WORD2VEC_FILE_NAME);
+		}
 		LinkedHashMap<String, Double> results = w2vDist.getWordByScores(query, amount, 0.0);
 		if (results == null) {
 			return;
