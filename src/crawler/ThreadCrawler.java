@@ -60,12 +60,15 @@ public class ThreadCrawler implements Runnable {
 			//System.out.println("Page is downloaded");
 			Double currentWeight = 0.0;
 			LinkedHashMap<String,Double> localLinks = new LinkedHashMap<String,Double>();
+			
 			int splitTextSize = mDownloader.getSplitTextAmount();
+			int tokenAmount = 0;
 			for (int i = 0; i < splitTextSize; i++) {
 				String splitText = mDownloader.getSplitText(i);
 				if (!splitText.contains("</a>")) {//Not href
 			    	String content = splitText.trim();
 			    	String[] textContents = content.split("[^a-zA-Z]+");
+			    	tokenAmount += textContents.length;
 			    	for (int j = 0; j < textContents.length; j++ ) {
 			    		String word = kStemmer.stem(textContents[j]);
 			    		Double wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
@@ -97,9 +100,10 @@ public class ThreadCrawler implements Runnable {
 			    	}
 				}
 			}
-			//TODO Normalise currentWeight by the total tokens
+			
 			tControl.savePageLinks(address, localLinks, currentWeight, mDownloader);
-			tControl.savePage(address, currentWeight);
+			// Normalise currentWeight by the total tokens
+			tControl.savePage(address, currentWeight/tokenAmount);
 			//System.out.println(currentWeight);
 			LinkedHashMap<String, String> map = mDownloader.getClickableLinks();
 			if (map != null) {
