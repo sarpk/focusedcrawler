@@ -89,9 +89,8 @@ public class ThreadCrawler implements Runnable {
 								String hrefLinkAttr = 
 										Jsoup.parse(hrefLink, "").select("a[href]").attr("href");
 								//System.out.println(hrefLinkAttr);
-								//TODO change the score
-								Double linkScore = (wordScore.doubleValue()/
-										qStore.getAmountEntries(query).doubleValue()*0.9);
+								Double linkScore = (wordScore.doubleValue() * qStore.getMinTermExponent(query));
+										//qStore.getAmountEntries(query).doubleValue()*0.9);
 								//System.out.println(word + ": " +linkScore);
 								localLinks.put(hrefLinkAttr, linkScore);
 							}

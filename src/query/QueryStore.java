@@ -11,6 +11,8 @@ import org.lemurproject.kstem.KrovetzStemmer;
 public class QueryStore {
 	private static QueryStore singleton = null;
 	private LinkedHashMap<String, LinkedHashMap<String, Double>> termHash;
+	private LinkedHashMap<String, Double> minScores;
+	
 	/**
 	 * @return The instance of singleton
 	 */
@@ -89,7 +91,7 @@ public class QueryStore {
 			}
 		}
 		if (term1.equals(term2)) {
-			score = getAmountEntries(term1);
+			score = 1.0;//getAmountEntries(term1);
 		}
 		return score;
 	}
@@ -121,11 +123,32 @@ public class QueryStore {
 		if (entry == null) {
 			entry = new LinkedHashMap<String, Double>();
 		}
+		
+		Double dbl = minScores.get(term1);
+		if (dbl == null) {
+			dbl = 1.0;
+		}
+		
 		Double tmpScore = entry.get(term2); 
 		if (tmpScore == null) {//add the entry
 			entry.put(term2, score);
 		}
+		
+		if (dbl > 0.0 && dbl > score) {
+			System.out.println("Min score is changing to " + score);
+			minScores.put(term1, score);
+		}
+		
 		termHash.put(term1, entry);
+	}
+	
+	/**
+	 * 
+	 * @param query
+	 * @return The lower base of the double number in log_10
+	 */
+	public double getMinTermExponent(String query) {
+		return Math.pow(10, Math.floor(Math.log10(Math.abs(minScores.get(query)))));
 	}
 	
 	/**
@@ -133,6 +156,7 @@ public class QueryStore {
 	 */
 	private QueryStore(){
 		termHash = new LinkedHashMap<String, LinkedHashMap<String, Double>>();
+		minScores = new LinkedHashMap<String, Double>();
 	}
 
 }
