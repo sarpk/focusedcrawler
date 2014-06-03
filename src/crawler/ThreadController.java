@@ -99,7 +99,9 @@ public class ThreadController {
 				address = String.format("%s://%s%s", url.getProtocol() ,url.getHost(),address);
 			}
 		}
-		//System.out.println(address + " with the weight of " + linkWeight);
+		//Handle the hashtag
+		address = address.split("#")[0];
+		System.out.println(address + " with the weight of " + linkWeight);
 		int bucketNo = hashString(address);
 		bucketToBeCrawled.get(bucketNo).addAddress(address, linkWeight);
 	}
