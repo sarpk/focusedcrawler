@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 import org.lemurproject.kstem.KrovetzStemmer;
 
-import query.ExampleDocumentHandler;
 import query.QueryStore;
+import query.Word2VecHashConstructor;
 
 public class MainMeth {
 	public static void main(String[] args) {
@@ -35,11 +35,14 @@ public class MainMeth {
 		MainSettings.PAGE_AMOUNT = pageAmount;
 		
 		/*ExampleDocumentHandler docHandle = */
-		new ExampleDocumentHandler();
+		//new ExampleDocumentHandler();
 		QueryStore qStore = QueryStore.getInstance();
-
+		Word2VecHashConstructor.Constructor("", 1000);//Just initialise the word2vec
+		
 		MainWebController mControl = new MainWebController();
 		mControl.setup();
+		
+		
 		
 		KrovetzStemmer kStemmer = new KrovetzStemmer();
 		String input = "Singular phone plural phones. Stemming works!";
