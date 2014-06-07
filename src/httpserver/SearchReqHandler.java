@@ -54,7 +54,7 @@ public class SearchReqHandler implements HttpHandler {
 			if (query != null && URL != null) {
 				KrovetzStemmer kStemmer = new KrovetzStemmer();
 				query = kStemmer.stem(query);
-				Word2VecHashConstructor.Constructor(query, 1000);
+				Word2VecHashConstructor.Constructor(query, 50);
 				
 				QueryStore qStore = QueryStore.getInstance();
 				if (qStore.getTermsSize(query) == 0) {
