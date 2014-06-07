@@ -132,7 +132,8 @@ public class ThreadController {
 			}
 			System.out.println("");*/
 			if (freeThreads.size() == bucketSize) {
-				printTop10Pages();
+				finishSearch();
+				//printTop10Pages();
 			}
 		}else {
 			runFreeThreads();
@@ -215,6 +216,10 @@ public class ThreadController {
 				break;
 			}
 		}
+		finishSearch();
+	}
+	
+	private void finishSearch() {
 		lastTime = System.currentTimeMillis();
 		searchFinished = true;
 	    System.out.println("Total execution time: " + getElapsedTime() + " sec"); 
