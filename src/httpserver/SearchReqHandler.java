@@ -5,8 +5,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import org.lemurproject.kstem.KrovetzStemmer;
-
 import query.QueryStore;
 import query.Word2VecHashConstructor;
 
@@ -52,9 +50,10 @@ public class SearchReqHandler implements HttpHandler {
 			}
 			
 			if (query != null && URL != null) {
-				KrovetzStemmer kStemmer = new KrovetzStemmer();
-				query = kStemmer.stem(query);
-				Word2VecHashConstructor.Constructor(query, 50);
+				//KrovetzStemmer kStemmer = new KrovetzStemmer();
+				//query = kStemmer.stem(query);
+				query = query.toLowerCase();
+				Word2VecHashConstructor.Constructor(query, 100);
 				
 				QueryStore qStore = QueryStore.getInstance();
 				if (qStore.getTermsSize(query) == 0) {
