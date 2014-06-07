@@ -3,6 +3,8 @@ package query;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import org.lemurproject.kstem.KrovetzStemmer;
+
 import crawler.MainSettings;
 
 /**
@@ -22,9 +24,17 @@ public class Word2VecHashConstructor {
 		}
 		QueryStore qStore = QueryStore.getInstance();
 		for (Entry<String, Double> result : results.entrySet()) {
-			qStore.setTermVsTermAndScore(query, result.getKey(), result.getValue());
-			System.out.println (result.getKey() + " : " + result.getValue());
+			double entryValue = Math.pow(result.getValue(), 3.0);//^3 to have difference between results
+			qStore.setTermVsTermAndScore(query, result.getKey(), entryValue);
+			System.out.println (result.getKey() + " : " + entryValue);
 		}
+		
+		//split and tokenise the query so that each of their entry would have 20 score
+		KrovetzStemmer kStemmer = new KrovetzStemmer();
+		for (String tok : query.split("[^a-zA-Z]+")) {
+			qStore.setTermVsTermAndScore(query, kStemmer.stem(tok), 20.0);
+		}
+		
 	}
 
 }
