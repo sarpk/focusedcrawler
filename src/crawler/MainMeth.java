@@ -13,7 +13,7 @@ import query.Word2VecHashConstructor;
 
 public class MainMeth {
 	public static void main(String[] args) {
-		int threadNo = 50;
+		int threadNo = 30;
 		int pageAmount = 500;
 		Iterator<String> argIt = Arrays.asList(args).iterator();
 		while (argIt.hasNext()) {
