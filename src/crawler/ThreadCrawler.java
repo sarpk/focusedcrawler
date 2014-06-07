@@ -69,6 +69,8 @@ public class ThreadCrawler implements Runnable {
 			    	String content = splitText.trim();
 			    	String[] textContents = content.split("[^a-zA-Z]+");
 			    	tokenAmount += textContents.length;
+		    		int prevWordInd = 0;
+		    		String prevWord = null;
 			    	for (int j = 0; j < textContents.length; j++ ) {
 			    		String word = kStemmer.stem(textContents[j]);
 			    		Double wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
@@ -90,8 +92,14 @@ public class ThreadCrawler implements Runnable {
 										Jsoup.parse(hrefLink, "").select("a[href]").attr("href");
 								//System.out.println(hrefLinkAttr);
 								Double linkScore = (wordScore.doubleValue() * qStore.getMinTermExponent(query));
-										//qStore.getAmountEntries(query).doubleValue()*0.9);
-								//System.out.println(word + ": " +linkScore);
+								if (wordScore == MainSettings.EXACT_MATCH_SCORE) {
+									int dist = j - prevWordInd;
+									if (dist < 10 && dist > 0 && prevWord != null && !prevWord.equals(word)) { //proximity of 10
+										wordScore *= wordScore/dist;
+									}
+									prevWord = word;
+									prevWordInd = j;
+								}
 								localLinks.put(hrefLinkAttr, linkScore);
 							}
 						}
@@ -101,8 +109,8 @@ public class ThreadCrawler implements Runnable {
 			}
 			
 			tControl.savePageLinks(address, localLinks, currentWeight, mDownloader);
-			// Normalise currentWeight by the total tokens
-			tControl.savePage(address, currentWeight/tokenAmount);
+			// Normalise currentWeight by the total tokens (commented out)
+			tControl.savePage(address, currentWeight/1); ///tokenAmount);
 			//System.out.println(currentWeight);
 			LinkedHashMap<String, String> map = mDownloader.getClickableLinks();
 			if (map != null) {
