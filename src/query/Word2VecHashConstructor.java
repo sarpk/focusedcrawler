@@ -24,7 +24,7 @@ public class Word2VecHashConstructor {
 		}
 		QueryStore qStore = QueryStore.getInstance();
 		for (Entry<String, Double> result : results.entrySet()) {
-			double entryValue = Math.pow(result.getValue(), 3.0);//^3 to have difference between results
+			double entryValue = Math.pow(result.getValue(), 10.0);//^10 to have difference between results
 			qStore.setTermVsTermAndScore(query, result.getKey(), entryValue);
 			System.out.println (result.getKey() + " : " + entryValue);
 		}
