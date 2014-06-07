@@ -109,8 +109,8 @@ public class ThreadCrawler implements Runnable {
 			}
 			
 			tControl.savePageLinks(address, localLinks, currentWeight, mDownloader);
-			// Normalise currentWeight by the total tokens (commented out)
-			tControl.savePage(address, currentWeight/1); ///tokenAmount);
+			// Normalise currentWeight by the total tokens
+			tControl.savePage(address, currentWeight/tokenAmount);
 			//System.out.println(currentWeight);
 			LinkedHashMap<String, String> map = mDownloader.getClickableLinks();
 			if (map != null) {
