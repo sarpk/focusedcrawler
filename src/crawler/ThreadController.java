@@ -20,7 +20,7 @@ public class ThreadController {
 	private int bucketSize;
 	private final int maxCrawlAmount;
 	private int currentCrawled;
-	private int weightThreshold;
+	private double weightThreshold;
 	private Semaphore reportSem;
 	private long startTime;
 	private long lastTime;
@@ -30,7 +30,7 @@ public class ThreadController {
 		this.bucketSize = MainSettings.THREAD_AMOUNT;
 		this.maxCrawlAmount = MainSettings.PAGE_AMOUNT;
 		currentCrawled = 0;
-		weightThreshold = 0;
+		weightThreshold = Double.MIN_VALUE;
 		searchFinished = false;
 		this.startTime = startTime;
 		reportSem = new Semaphore(1);
@@ -84,11 +84,25 @@ public class ThreadController {
 			highestScoredPages.addAddress(address, currentWeight.doubleValue());
 			pageWeight(currentWeight);
 		}
+		//The below condition is added for cases where there aren't enough results after first few pages
+		else if (highestScoredPages.getMaxScore(10) < currentWeight ) { // 10 results are always returned, so check that 
+			System.out.println("Saving page: " + address);
+			highestScoredPages.addAddress(address, currentWeight.doubleValue());
+			pageWeight(currentWeight);
+		}
+		else {
+			System.out.println("Rejected page: " + address);
+			System.out.println("Highest score was: " + highestScoredPages.getMaxScore(10));
+		}
 	}
 
 	
 	public void saveLink(String prefix, String address, Double linkWeight) {
+		System.out.println("Addr before host handle: " + address);
 		if (!address.startsWith("http")) {
+			if (!(address.startsWith("/") || address.startsWith("\\")) ) {
+				address = String.format("/%s", address);
+			}
 			URL url = null;
 			try {
 				url = new URL(prefix);
@@ -99,6 +113,20 @@ public class ThreadController {
 				address = String.format("%s://%s%s", url.getProtocol() ,url.getHost(),address);
 			}
 		}
+		else {
+			URL url = null;
+			try {
+				url = new URL(address);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			address = String.format("%s://%s%s", url.getProtocol() ,url.getHost(), url.getPath());
+		}
+		if (address.endsWith("/") || address.endsWith("\\")) {
+			address = address.substring(0, address.length()-2);
+		}
+		System.out.println("Addr before hashtag handle: " + address);
 		//Handle the hashtag
 		address = address.split("#")[0];
 		System.out.println(address + " with the weight of " + linkWeight);
@@ -198,7 +226,7 @@ public class ThreadController {
 	 * @param currentWeight
 	 */
 	private void pageWeight(Double currentWeight) {
-		weightThreshold = Math.max(weightThreshold, (int) (currentWeight/2.0));
+		weightThreshold = Math.max(weightThreshold, (currentWeight/2.0));
 	}
 	
 	/**

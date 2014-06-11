@@ -58,7 +58,7 @@ public class ScorePriorityMap {
 	/**
 	 * @param nth largest score
 	 * @return the max nth score
-	 * @special case, if there aren't n elements then it returns the lowest
+	 * @special case, if there aren't n elements then it returns the  minimum double value
 	 * @special case, if there aren't any elements then it returns the minimum double value
 	 */
 	public Double getMaxScore(int n) {
@@ -67,6 +67,7 @@ public class ScorePriorityMap {
 			if ( --n == 0 ) { break; }
 			maxScore = score;
 		}
+		if (n != 0) {maxScore = Double.MIN_VALUE;}
 		return maxScore;
 	}
 	

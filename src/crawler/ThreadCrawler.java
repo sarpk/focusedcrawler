@@ -95,7 +95,7 @@ public class ThreadCrawler implements Runnable {
 								if (wordScore == MainSettings.EXACT_MATCH_SCORE) {
 									int dist = j - prevWordInd;
 									if (dist < 10 && dist > 0 && prevWord != null && !prevWord.equals(word)) { //proximity of 10
-										wordScore *= wordScore/dist;
+										wordScore = Math.max(wordScore, wordScore/dist);
 									}
 									prevWord = word;
 									prevWordInd = j;
