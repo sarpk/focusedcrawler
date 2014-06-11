@@ -47,7 +47,7 @@ public class ScorePriorityMap {
 	 * @special case, if there aren't any elements then it returns the minimum double value
 	 */
 	public Double getMinScore(int n) {
-		Double minScore = Double.MIN_VALUE;
+		Double minScore = Double.NEGATIVE_INFINITY;
 		for (Double score : linksOrdered.values()) {
 			if ( --n == 0 ) { break; }
 			minScore = score;
@@ -62,7 +62,7 @@ public class ScorePriorityMap {
 	 * @special case, if there aren't any elements then it returns the minimum double value
 	 */
 	public Double getMaxScore(int n) {
-		Double maxScore = Double.MIN_VALUE;
+		Double maxScore = Double.NEGATIVE_INFINITY;
 		for (Double score : Lists.reverse(Lists.newArrayList(linksOrdered.values()))) {
 			if ( --n == 0 ) { break; }
 			maxScore = score;

@@ -30,7 +30,7 @@ public class ThreadController {
 		this.bucketSize = MainSettings.THREAD_AMOUNT;
 		this.maxCrawlAmount = MainSettings.PAGE_AMOUNT;
 		currentCrawled = 0;
-		weightThreshold = Double.MIN_VALUE;
+		weightThreshold = Double.NEGATIVE_INFINITY;
 		searchFinished = false;
 		this.startTime = startTime;
 		reportSem = new Semaphore(1);
@@ -85,7 +85,7 @@ public class ThreadController {
 			pageWeight(currentWeight);
 		}
 		//The below condition is added for cases where there aren't enough results after first few pages
-		else if (highestScoredPages.getMaxScore(10) < currentWeight ) { // 10 results are always returned, so check that 
+		else if (highestScoredPages.getMaxScore(10) <= currentWeight ) { // 10 results are always returned, so check that 
 			System.out.println("Saving page: " + address);
 			highestScoredPages.addAddress(address, currentWeight.doubleValue());
 			pageWeight(currentWeight);
