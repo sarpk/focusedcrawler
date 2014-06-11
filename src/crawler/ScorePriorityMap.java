@@ -32,6 +32,44 @@ public class ScorePriorityMap {
 		return Lists.reverse(Lists.newArrayList(linksOrdered.keySet()));
 	}
 	
+	/**
+	 * 
+	 * @return the amount of links added
+	 */
+	public Integer getSize() {
+		return linksOrdered.size();
+	}
+	
+	/**
+	 * @param nth lowest score
+	 * @return the minimum nth score
+	 * @special case, if there aren't n elements then it returns the highest
+	 * @special case, if there aren't any elements then it returns the minimum double value
+	 */
+	public Double getMinScore(int n) {
+		Double minScore = Double.MIN_VALUE;
+		for (Double score : linksOrdered.values()) {
+			if ( --n == 0 ) { break; }
+			minScore = score;
+		}
+		return minScore;
+	}
+	
+	/**
+	 * @param nth largest score
+	 * @return the max nth score
+	 * @special case, if there aren't n elements then it returns the lowest
+	 * @special case, if there aren't any elements then it returns the minimum double value
+	 */
+	public Double getMaxScore(int n) {
+		Double maxScore = Double.MIN_VALUE;
+		for (Double score : Lists.reverse(Lists.newArrayList(linksOrdered.values()))) {
+			if ( --n == 0 ) { break; }
+			maxScore = score;
+		}
+		return maxScore;
+	}
+	
 	public String getHighestScoreAddress() {
 		String highest = null;
 		try {
