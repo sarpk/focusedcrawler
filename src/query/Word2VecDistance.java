@@ -2,6 +2,7 @@ package query;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Scanner;
@@ -36,19 +37,21 @@ public class Word2VecDistance {
 	 */
 	public LinkedHashMap<String, Double> getWordByScores(String entry, int maxEl, double minVal) {
 		
-		String[] entries = entry.split(" ");
+		String[] tmpEntries = entry.split(" ");
+		ArrayList<String> entries = new ArrayList<String>();
 
-		for (int i = 0; i < entries.length; i++) {// check if entry exists
-			Integer index = vocabs.get(entries[i]);
+		for (int i = 0; i < tmpEntries.length; i++) {// check if entry exists
+			Integer index = vocabs.get(tmpEntries[i]);
 			if (index == null) {
-				return null;
+				continue;
 			}
-			System.out.println("Word " + entries[i] + " is at " + index);
+			entries.add(tmpEntries[i]);
+			System.out.println("Word " + tmpEntries[i] + " is at " + index);
 		}
 		float vec[] = new float[size];
 		for (int i = 0; i < size; i++) { vec[i] = 0; }
-		for (int i = 0; i < entries.length; i++) {
-			int index = vocabs.get(entries[i]);
+		for (int i = 0; i < entries.size(); i++) {
+			int index = vocabs.get(entries.get(i));
 			for (int j = 0; j < size; j++) {
 				vec[j] += M[index][j];
 				//System.out.print(vec[j] + " ");
@@ -66,8 +69,8 @@ public class Word2VecDistance {
 		TreeMap<String, Double> highestScores = new ValueComparableMap<String, Double>(
 				Ordering.natural().reverse());
 		for (Entry<String, Integer> eachEntryMap : vocabs.entrySet()) {
-			for (int i = 0; i < entries.length; i++) {
-				if (eachEntryMap.getKey().equals(entries[i])) {
+			for (int i = 0; i < entries.size(); i++) {
+				if (eachEntryMap.getKey().equals(entries.get(i))) {
 					continue;
 				}
 			}
