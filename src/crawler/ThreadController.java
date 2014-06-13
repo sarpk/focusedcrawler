@@ -118,7 +118,6 @@ public class ThreadController {
 			try {
 				url = new URL(address);
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			address = String.format("%s://%s%s", url.getProtocol() ,url.getHost(), url.getPath());

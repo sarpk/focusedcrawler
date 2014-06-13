@@ -67,13 +67,19 @@ public class ThreadCrawler implements Runnable {
 				String splitText = mDownloader.getSplitText(i);
 				if (!splitText.contains("</a>")) {//Not href
 			    	String content = splitText.trim();
-			    	String[] textContents = content.split("[^a-zA-Z]+");
+			    	String[] textContents = content.split("[^a-zA-Z0-9]+");
 			    	tokenAmount += textContents.length;
 		    		int prevWordInd = 0;
 		    		String prevWord = null;
 			    	for (int j = 0; j < textContents.length; j++ ) {
-			    		String word = kStemmer.stem(textContents[j]);
-			    		Double wordScore = qStore.getTermvsTermScore(query, word.toLowerCase()); 
+			    		String unstemmedWord = textContents[j].toLowerCase();
+			    		String word = kStemmer.stem(unstemmedWord);
+			    		Double wordScore = qStore.getTermvsTermScore(query, word);
+			    		Double unstemmedScore = qStore.getTermvsTermScore(query, unstemmedWord);
+			    		if ( unstemmedScore > wordScore) { //Ensure using the highest among stemmed and unstemmed
+			    			wordScore = unstemmedScore;
+			    			word = unstemmedWord;
+			    		}
 						if (wordScore != 0) {
 							//Get the closest href link index
 							int getInd = -1;
@@ -85,6 +91,19 @@ public class ThreadCrawler implements Runnable {
 							mDownloader.getSplitText(i-1).contains("</a>")) {
 								getInd = i-1;
 							}
+							
+							System.out.println("The wordScore is " + wordScore + " for the word " + word + " unstemmed as " + textContents[j]);
+							if (wordScore == MainSettings.EXACT_MATCH_SCORE) {//If there is an exact match
+								int dist = j - prevWordInd;
+								System.out.println("Trying wordscore with the dist of " + dist + " with the word " + word + " for addr " + address);
+								if (dist < 10 && dist > 0 && prevWord != null && !prevWord.equals(word)) { //proximity of 10
+									wordScore = Math.pow(wordScore, wordScore/dist);
+									System.out.println("Wordscore for " + word + " w/ prev word " + prevWord + " is changed to " + wordScore + " for the addr of " + address);
+								}
+								prevWord = word;
+								prevWordInd = j;
+							}
+							
 							//If closest href exists
 							if (getInd != -1) {
 								String hrefLink = mDownloader.getSplitText(getInd);
@@ -92,16 +111,10 @@ public class ThreadCrawler implements Runnable {
 										Jsoup.parse(hrefLink, "").select("a[href]").attr("href");
 								//System.out.println(hrefLinkAttr);
 								Double linkScore = (wordScore.doubleValue() * qStore.getMinTermExponent(query));
-								if (wordScore == MainSettings.EXACT_MATCH_SCORE) {
-									int dist = j - prevWordInd;
-									if (dist < 10 && dist > 0 && prevWord != null && !prevWord.equals(word)) { //proximity of 10
-										wordScore = Math.max(wordScore, wordScore/dist);
-									}
-									prevWord = word;
-									prevWordInd = j;
-								}
 								localLinks.put(hrefLinkAttr, linkScore);
 							}
+							
+
 						}
 						currentWeight += wordScore;
 			    	}

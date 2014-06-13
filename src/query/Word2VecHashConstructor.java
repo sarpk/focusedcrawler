@@ -26,8 +26,10 @@ public class Word2VecHashConstructor {
 		
 		//split and tokenise the query so that each of their entry would have 10 score
 		KrovetzStemmer kStemmer = new KrovetzStemmer();
-		for (String tok : query.split("[^a-zA-Z]+")) {
+		for (String tok : query.split("[^a-zA-Z0-9]+")) {
 			qStore.setTermVsTermAndScore(query, kStemmer.stem(tok), MainSettings.EXACT_MATCH_SCORE);
+			qStore.setTermVsTermAndScore(query, tok, MainSettings.EXACT_MATCH_SCORE); //also add non stemmed term
+			System.out.println (kStemmer.stem(tok) + " : " + MainSettings.EXACT_MATCH_SCORE);
 		}
 		
 		for (Entry<String, Double> result : results.entrySet()) {
