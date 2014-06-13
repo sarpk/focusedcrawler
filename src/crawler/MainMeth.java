@@ -14,7 +14,7 @@ import query.Word2VecHashConstructor;
 public class MainMeth {
 	public static void main(String[] args) {
 		int threadNo = 30;
-		int pageAmount = 500;
+		int pageAmount = 1000;
 		Iterator<String> argIt = Arrays.asList(args).iterator();
 		while (argIt.hasNext()) {
 			String argTag = argIt.next();
@@ -34,6 +34,12 @@ public class MainMeth {
 		MainSettings.THREAD_AMOUNT = threadNo;
 		MainSettings.PAGE_AMOUNT = pageAmount;
 		
+		KrovetzStemmer kStemmer = new KrovetzStemmer();
+		String input = "Singular phone plural 5 different phones. Stemming works!";
+		for (String tok : input.split("[^a-zA-Z0-9]+")) {
+			System.out.print(kStemmer.stem(tok) + " ");
+		}
+		
 		/*ExampleDocumentHandler docHandle = */
 		//new ExampleDocumentHandler();
 		QueryStore qStore = QueryStore.getInstance();
@@ -44,11 +50,7 @@ public class MainMeth {
 		
 		
 		
-		KrovetzStemmer kStemmer = new KrovetzStemmer();
-		String input = "Singular phone plural phones. Stemming works!";
-		for (String tok : input.split("[^a-zA-Z]+")) {
-			System.out.print(kStemmer.stem(tok) + " ");
-		}
+
 		System.out.println("");
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Please enter the query to be searched");
