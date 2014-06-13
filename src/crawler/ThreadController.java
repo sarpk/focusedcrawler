@@ -98,7 +98,7 @@ public class ThreadController {
 
 	
 	public void saveLink(String prefix, String address, Double linkWeight) {
-		System.out.println("Addr before host handle: " + address);
+		//System.out.println("Addr before host handle: " + address);
 		if (!address.startsWith("http")) {
 			if (!(address.startsWith("/") || address.startsWith("\\")) ) {
 				address = String.format("/%s", address);
@@ -125,10 +125,10 @@ public class ThreadController {
 		if (address.endsWith("/") || address.endsWith("\\")) {
 			address = address.substring(0, address.length()-2);
 		}
-		System.out.println("Addr before hashtag handle: " + address);
+		//System.out.println("Addr before hashtag handle: " + address);
 		//Handle the hashtag
 		address = address.split("#")[0];
-		System.out.println(address + " with the weight of " + linkWeight);
+		//System.out.println(address + " with the weight of " + linkWeight);
 		int bucketNo = hashString(address);
 		bucketToBeCrawled.get(bucketNo).addAddress(address, linkWeight);
 	}
