@@ -53,7 +53,7 @@ public class SearchReqHandler implements HttpHandler {
 				//KrovetzStemmer kStemmer = new KrovetzStemmer();
 				//query = kStemmer.stem(query);
 				query = query.toLowerCase();
-				Word2VecHashConstructor.Constructor(query, 1000);
+				Word2VecHashConstructor.Constructor(query, 500);
 				
 				QueryStore qStore = QueryStore.getInstance();
 				if (qStore.getTermsSize(query) == 0) {
