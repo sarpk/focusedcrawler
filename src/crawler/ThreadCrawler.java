@@ -1,5 +1,6 @@
 package crawler;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
@@ -63,6 +64,7 @@ public class ThreadCrawler implements Runnable {
 			
 			int splitTextSize = mDownloader.getSplitTextAmount();
 			int tokenAmount = 0;
+			HashSet<String> totalUniqueExactMatch = new HashSet<String>();//more unique exact match is better than total exact match
 			for (int i = 0; i < splitTextSize; i++) {
 				String splitText = mDownloader.getSplitText(i);
 				if (!splitText.contains("</a>")) {//Not href
@@ -92,10 +94,11 @@ public class ThreadCrawler implements Runnable {
 								getInd = i-1;
 							}
 							
-							System.out.println("The wordScore is " + wordScore + " for the word " + word + " unstemmed as " + textContents[j]);
+							//System.out.println("The wordScore is " + wordScore + " for the word " + word + " unstemmed as " + textContents[j]);
 							if (wordScore == MainSettings.EXACT_MATCH_SCORE) {//If there is an exact match
+								totalUniqueExactMatch.add(word);
 								int dist = j - prevWordInd;
-								System.out.println("Trying wordscore with the dist of " + dist + " with the word " + word + " for addr " + address);
+								//System.out.println("Trying wordscore with the dist of " + dist + " with the word " + word + " for addr " + address);
 								if (dist < 10 && dist > 0 && prevWord != null && !prevWord.equals(word)) { //proximity of 10
 									wordScore = Math.pow(wordScore, wordScore/dist);
 									System.out.println("Wordscore for " + word + " w/ prev word " + prevWord + " is changed to " + wordScore + " for the addr of " + address);
@@ -120,7 +123,10 @@ public class ThreadCrawler implements Runnable {
 			    	}
 				}
 			}
+			currentWeight = Math.pow(currentWeight,//power it by the unique match
+					Integer.valueOf(Math.max(totalUniqueExactMatch.size(), 1)).doubleValue()); //if there is no "unique" match then make sure it's powered by 1
 			
+			System.out.println("The address " + address + " is saved with the value of " + currentWeight + " w/TokAm " + currentWeight/tokenAmount);
 			tControl.savePageLinks(address, localLinks, currentWeight, mDownloader);
 			// Normalise currentWeight by the total tokens
 			tControl.savePage(address, currentWeight/tokenAmount);
