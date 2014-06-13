@@ -23,16 +23,17 @@ public class Word2VecHashConstructor {
 			return;
 		}
 		QueryStore qStore = QueryStore.getInstance();
-		for (Entry<String, Double> result : results.entrySet()) {
-			double entryValue = Math.pow(result.getValue(), 10.0);//^10 to have difference between results
-			qStore.setTermVsTermAndScore(query, result.getKey(), entryValue);
-			System.out.println (result.getKey() + " : " + entryValue);
-		}
 		
 		//split and tokenise the query so that each of their entry would have 10 score
 		KrovetzStemmer kStemmer = new KrovetzStemmer();
 		for (String tok : query.split("[^a-zA-Z]+")) {
 			qStore.setTermVsTermAndScore(query, kStemmer.stem(tok), MainSettings.EXACT_MATCH_SCORE);
+		}
+		
+		for (Entry<String, Double> result : results.entrySet()) {
+			double entryValue = Math.pow(result.getValue(), 10.0);//^10 to have difference between results
+			qStore.setTermVsTermAndScore(query, result.getKey(), entryValue);
+			System.out.println (result.getKey() + " : " + entryValue);
 		}
 		
 	}
