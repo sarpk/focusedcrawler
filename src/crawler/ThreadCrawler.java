@@ -94,6 +94,17 @@ public class ThreadCrawler implements Runnable {
 								getInd = i-1;
 							}
 							
+							//If closest href exists
+							if (getInd != -1) {
+								String hrefLink = mDownloader.getSplitText(getInd);
+								String hrefLinkAttr = 
+										Jsoup.parse(hrefLink, "").select("a[href]").attr("href");
+								//System.out.println(hrefLinkAttr);
+								Double linkScore = (wordScore.doubleValue() * qStore.getMinTermExponent(query));
+								localLinks.put(hrefLinkAttr, linkScore);
+							}
+							
+							//Boost the page score for the exact matchings
 							//System.out.println("The wordScore is " + wordScore + " for the word " + word + " unstemmed as " + textContents[j]);
 							if (wordScore == MainSettings.EXACT_MATCH_SCORE) {//If there is an exact match
 								totalUniqueExactMatch.add(word);
@@ -106,17 +117,6 @@ public class ThreadCrawler implements Runnable {
 								prevWord = word;
 								prevWordInd = j;
 							}
-							
-							//If closest href exists
-							if (getInd != -1) {
-								String hrefLink = mDownloader.getSplitText(getInd);
-								String hrefLinkAttr = 
-										Jsoup.parse(hrefLink, "").select("a[href]").attr("href");
-								//System.out.println(hrefLinkAttr);
-								Double linkScore = (wordScore.doubleValue() * qStore.getMinTermExponent(query));
-								localLinks.put(hrefLinkAttr, linkScore);
-							}
-							
 
 						}
 						currentWeight += wordScore;
@@ -125,7 +125,7 @@ public class ThreadCrawler implements Runnable {
 			}
 			currentWeight = Math.pow(currentWeight,//power it by the unique match
 					Integer.valueOf(Math.max(totalUniqueExactMatch.size(), 1)).doubleValue()); //if there is no "unique" match then make sure it's powered by 1
-			
+			if (address.endsWith("/")) { address = address.substring(0, address.length()-1);}
 			System.out.println("The address " + address + " is saved with the value of " + currentWeight + " w/TokAm " + currentWeight/tokenAmount);
 			tControl.savePageLinks(address, localLinks, currentWeight, mDownloader);
 			// Normalise currentWeight by the total tokens

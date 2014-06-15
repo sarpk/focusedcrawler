@@ -123,7 +123,7 @@ public class ThreadController {
 			address = String.format("%s://%s%s", url.getProtocol() ,url.getHost(), url.getPath());
 		}
 		if (address.endsWith("/") || address.endsWith("\\")) {
-			address = address.substring(0, address.length()-2);
+			address = address.substring(0, address.length()-1);
 		}
 		//System.out.println("Addr before hashtag handle: " + address);
 		//Handle the hashtag
